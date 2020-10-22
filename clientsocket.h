@@ -10,7 +10,7 @@ class ClientSocket {
 
 	int hostPort;
 
-	char *hostIPString;
+	char *hostIP;
 	string hostURL;
 
 	// buffer for response
@@ -43,7 +43,7 @@ public:
 	bool setHostPort(int port);
 	int getHostPort() { return hostPort; };
 
-	string getHostIPString(){ return hostIPString; };
+	string getHostIP(){ return hostIP; };
 
 	bool isConnected(){ return connected; };
 

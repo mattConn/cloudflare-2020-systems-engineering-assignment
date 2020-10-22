@@ -29,6 +29,12 @@ ClientSocket::ClientSocket(string &url) : ClientSocket()
 		exit(EXIT_FAILURE);
 	}
 
+	if(!connectToHost())
+	{
+		cerr << "Could not connect to host at " << hostIP << endl;
+		exit(EXIT_FAILURE);
+	}
+
 	
 }
 
@@ -49,10 +55,10 @@ bool ClientSocket::setHostIP(string &url)
 	hostEntry = gethostbyname(url.c_str());
 
 	// convert ip to IPv4 dotted decimal str
-	hostIPString = inet_ntoa(*( (struct in_addr*) hostEntry->h_addr)); 
+	hostIP = inet_ntoa(*( (struct in_addr*) hostEntry->h_addr)); 
 
 	// convert address from string to bin, store in sin_addr
-    if(inet_pton(AF_INET, hostIPString, &hostAddress.sin_addr) <= 0) return false;
+    if(inet_pton(AF_INET, hostIP, &hostAddress.sin_addr) <= 0) return false;
 
 	hostURL = url;
 
