@@ -4,9 +4,45 @@
 
 using namespace std;
 
-int main()
+void printHelp();
+
+int main(int argc, char *argv[])
 {
-	string url = "foobiebletch.net";
+	string url;
+
+	// handle cli args
+	//================
+
+	// missing args
+	if(argc < 2)
+	{
+		printHelp();
+		return 1;
+	}
+
+	// check args
+	for(int i=0; i < argc; i++)
+	{
+		string arg = argv[i];
+
+		// help
+		if(arg == "--help")
+		{
+			printHelp();
+			return 0;
+		}
+
+		// url 
+		if(arg == "--url")
+		{
+			if(i+1 >= argc)
+			{
+				cerr << "Missing URL." << endl;
+				return 0;
+			}
+		}
+	}
+
 
 	ClientSocket socket(url);
 	/*
@@ -28,4 +64,9 @@ int main()
 	cout << socket.getResponse() << endl;
 
 	return 0;
+}
+
+void printHelp()
+{
+	cout << "Help String" << endl;
 }
