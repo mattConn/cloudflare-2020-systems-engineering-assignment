@@ -9,6 +9,8 @@ class Connector {
 
 	int port = 80;
 
+	char *hostIPString;
+
 	// buffer for response
 	char responseString[1024] = {0};
 
@@ -18,8 +20,8 @@ class Connector {
 	// host information struct
 	struct hostent *hostEntry;
 
-	// host address
-	struct sockaddr_in *serverAddress;
+	// host address struct
+	struct sockaddr_in *hostAddress;
 
 public:
 
@@ -29,15 +31,12 @@ public:
 	//========
 
 	// port accessors
-	inline bool setPort(int portNum){
-		if(portNum<0) return false;
+	bool setPort(int portNum);
+	int getPort() { return port; };
 
-		return (port = portNum);
-	};
+	string getHostIPString(){ return hostIPString; };
 
-	inline int getPort() { return port; };
-
-	bool connectTo(string &url); // connect to url 
+	bool connectTo(string &urlString); // connect to url 
 	bool makeHTTPRequest(); // make request after connection 
 	string getHTTPResponse(); // get response string
 };
