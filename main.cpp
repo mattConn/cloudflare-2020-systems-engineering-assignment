@@ -91,15 +91,12 @@ int main(int argc, char *argv[])
 	*/
 	
 	if(!socket.isConnected())
-		cout << "Could not connect to host " << url << endl;
-	else
 	{
-		cout << "Connected to host " << url << endl;
-		cout << "Host IP: " << socket.getHostIP() << endl;
+		cout << "Could not connect to host " << url << endl;
+		return 1;
 	}
 
 	socket.makeRequest();
-	cout << "\tResponse:" << endl;
 	cout << socket.getResponse() << endl;
 
 	return 0;
