@@ -30,6 +30,8 @@ public:
 
 	// methods
 	//========
+	
+	bool makeSocket(); // set file descriptor
 
 	// port accessors
 	bool setHostPort(int port);

@@ -10,16 +10,24 @@ using namespace std;
 // constructor
 ClientSocket::ClientSocket()
 {
-	// create socket using IPv4, TCP, IP; exit on failure
-	fileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
-	if(fileDescriptor < 0) 
+	if(!makeSocket())
 	{
-		cerr << "Could not create socket." << endl;
+		cerr << "Could not make socket. Exiting." << endl;
 		exit(EXIT_FAILURE);
 	}
 
 	hostAddress.sin_family = AF_INET; // set to IPv4
 	setHostPort(80);
+}
+
+bool ClientSocket::makeSocket()
+{
+	// create socket using IPv4, TCP, IP
+	fileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+
+	if(fileDescriptor < 0) return false;
+
+	return true;
 }
 
 // set port
