@@ -4,10 +4,9 @@
 
 using namespace std;
 
-void printHelp();
-
 int main(int argc, char *argv[])
 {
+	string helpString = "Usage: makereq --url <url> [--profile <number of requests>]";
 	string url;
 	int requestCount = 1;
 
@@ -17,7 +16,8 @@ int main(int argc, char *argv[])
 	// missing args
 	if(argc < 2)
 	{
-		printHelp();
+		cerr << "Missing args." << endl;
+		cout << helpString << endl;
 		return 1;
 	}
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 		// help
 		if(arg == "--help")
 		{
-			printHelp();
+			cout << helpString << endl;
 			return 0;
 		}
 
@@ -100,9 +100,4 @@ int main(int argc, char *argv[])
 	cout << socket.getResponse() << endl;
 
 	return 0;
-}
-
-void printHelp()
-{
-	cout << "Help String" << endl;
 }
