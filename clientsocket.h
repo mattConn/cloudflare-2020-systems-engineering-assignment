@@ -10,8 +10,11 @@ class ClientSocket {
 
 	int hostPort;
 
+	// host identifiers
 	char *hostIP;
 	string hostURL;
+	string hostURI;
+	string hostDomain;
 
 	// buffer for response
 	char response[1024] = {0};
@@ -25,6 +28,9 @@ class ClientSocket {
 
 	// host address struct
 	struct sockaddr_in hostAddress;
+
+	// helper function for splitting url
+	void formatHostURL(string url);
 
 public:
 
@@ -45,6 +51,7 @@ public:
 	int getHostPort() { return hostPort; };
 
 	string getHostIP(){ return hostIP; };
+	string getHostURL(){ return hostURL; };
 
 	bool isConnected(){ return connected; };
 

@@ -18,27 +18,53 @@ ClientSocket::ClientSocket()
 // constructor with url
 ClientSocket::ClientSocket(string &url) : ClientSocket()
 {
+	// set fd
 	if(!makeSocket())
 	{
 		cerr << "Could not make socket. Exiting." << endl;
 		exit(EXIT_FAILURE);
 	}
 
+	// get ip from url, convert to IPv4 address string
 	if(!setHostIP(url))
 	{
 		cerr << "Bad address:" << url << "." << endl;
 		exit(EXIT_FAILURE);
 	}
 
+	// connect
 	if(!connectToHost())
 	{
 		cerr << "Could not connect to host at " << hostIP << endl;
 		exit(EXIT_FAILURE);
 	}
 
+	// prepare request
 	request = "GET / HTTP/1.1\r\nHost: "+hostURL+"\r\n\r\n";
-
 	
+}
+
+void ClientSocket::formatHostURL(string url)
+{
+	// strip protocol
+	//===============
+
+	// only if specified
+    int pos = url.find("//");
+	if(pos != string::npos) url.erase(0,pos+2);
+    
+	// split url into domain and uri
+	// =============================
+	pos = url.find("/");
+    if(pos != string::npos)
+	{
+      hostDomain = url.substr(0,pos);
+      hostURI = url.substr(pos);
+	} else { 
+		// no uri
+		hostDomain = url;
+		hostURI = "/";
+	}
 }
 
 bool ClientSocket::makeSocket()
@@ -54,6 +80,10 @@ bool ClientSocket::makeSocket()
 // convert url
 bool ClientSocket::setHostIP(string &url)
 {
+
+	// split url into domain and uri
+	formatHostURL(url);
+
  	// get host data, for converting url to ip
 	hostEntry = gethostbyname(url.c_str());
 
@@ -64,6 +94,10 @@ bool ClientSocket::setHostIP(string &url)
     if(inet_pton(AF_INET, hostIP, &hostAddress.sin_addr) <= 0) return false;
 
 	hostURL = url;
+
+	cout << "URL: " << hostURL << endl;
+	cout << "URI: " << hostURI << endl;
+	cout << "DOMAIN: " << hostDomain << endl;
 
 	return true;
 }
