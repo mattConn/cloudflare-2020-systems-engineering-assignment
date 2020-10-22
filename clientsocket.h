@@ -14,7 +14,8 @@ class ClientSocket {
 	string hostURL;
 
 	// buffer for response
-	char responseString[1024] = {0};
+	char response[1024] = {0};
+	string request;
 
 	// connection status
 	bool connected = false;
@@ -48,6 +49,6 @@ public:
 	bool isConnected(){ return connected; };
 
 	bool connectToHost(); 
-	bool makeHTTPRequest(); // make request after connection 
-	string getHTTPResponse(); // get response string
+	bool makeRequest(); // make request after connection 
+	string getResponse(){ return response; }; // get response string
 };

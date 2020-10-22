@@ -2,6 +2,7 @@
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
 #include <netdb.h> 
+#include <unistd.h> 
 #include <iostream> 
 #include <string> 
 
@@ -34,6 +35,8 @@ ClientSocket::ClientSocket(string &url) : ClientSocket()
 		cerr << "Could not connect to host at " << hostIP << endl;
 		exit(EXIT_FAILURE);
 	}
+
+	request = "GET / HTTP/1.1\r\nHost: "+hostURL+"\r\n\r\n";
 
 	
 }
@@ -88,8 +91,10 @@ bool ClientSocket::connectToHost()
 }
 
 // make request to url after connection
-bool ClientSocket::makeHTTPRequest()
+bool ClientSocket::makeRequest()
 {
+	send( fileDescriptor, (char *) request.c_str(), strlen(request.c_str()), 0);
+	read(fileDescriptor, response, sizeof(response));
 
 	return true;
 }

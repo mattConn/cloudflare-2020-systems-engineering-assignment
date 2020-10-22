@@ -22,8 +22,10 @@ int main()
 		cout << "Connected to host " << url << endl;
 		cout << "Host IP: " << socket.getHostIP() << endl;
 	}
-	
 
+	socket.makeRequest();
+	cout << "\tResponse:" << endl;
+	cout << socket.getResponse() << endl;
 
 	return 0;
 }
