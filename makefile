@@ -1,6 +1,6 @@
 CC=clang++
 FLAGS=-std=c++11
-BIN=socky
+BIN=makereq
 
 $(BIN): *.cpp
 	$(CC) $(FLAGS) $^ -o $(BIN)
