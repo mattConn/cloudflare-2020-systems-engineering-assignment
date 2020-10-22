@@ -10,7 +10,6 @@ using namespace std;
 // constructor
 ClientSocket::ClientSocket()
 {
-
 	hostAddress.sin_family = AF_INET; // set to IPv4
 	setHostPort(80);
 }
@@ -23,6 +22,7 @@ ClientSocket::ClientSocket(string &url) : ClientSocket()
 		cerr << "Could not make socket. Exiting." << endl;
 		exit(EXIT_FAILURE);
 	}
+	
 }
 
 bool ClientSocket::makeSocket()
@@ -38,7 +38,16 @@ bool ClientSocket::makeSocket()
 // convert url
 bool ClientSocket::URLToIP(string &url)
 {
-	return false;
+ 	// get host data, for converting url to ip
+	hostEntry = gethostbyname(url.c_str());
+
+	// convert ip to IPv4 dotted decimal str
+	hostIPString = inet_ntoa(*( (struct in_addr*) hostEntry->h_addr)); 
+
+	// convert address from string to bin, store in sin_addr
+    if(inet_pton(AF_INET, hostIPString, &hostAddress.sin_addr) <= 0) return false;
+
+	return true;
 }
 
 // set port
@@ -53,18 +62,8 @@ bool ClientSocket::setHostPort(int port){
 }
 
 // connect to url
-bool ClientSocket::connectTo(string &urlString)
+bool ClientSocket::connectToHost()
 {
-
- 	// get host data, for converting url to ip
-	hostEntry = gethostbyname(urlString.c_str());
-
-	// convert ip to IPv4 dotted decimal str
-	hostIPString = inet_ntoa(*( (struct in_addr*) hostEntry->h_addr)); 
-
-	// convert address from string to bin
-    if(inet_pton(AF_INET, hostIPString, &hostAddress.sin_addr) <= 0) return false;
-
 	// connect to address and store sock fd
     if (connect(fileDescriptor, (struct sockaddr *)&hostAddress, sizeof(hostAddress)) < 0) return false;
 	connected = true;

@@ -8,8 +8,9 @@ int main()
 {
 	string url = "foobiebletch.net";
 	ClientSocket socket;
+	socket.URLToIP(url);
 	socket.makeSocket();
-	socket.connectTo(url);
+	socket.connectToHost();
 	
 	if(!socket.isConnected())
 		cout << "Could not connect to host " << url << endl;

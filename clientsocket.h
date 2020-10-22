@@ -46,7 +46,7 @@ public:
 
 	bool isConnected(){ return connected; };
 
-	bool connectTo(string &urlString); // connect to url 
+	bool connectToHost(); 
 	bool makeHTTPRequest(); // make request after connection 
 	string getHTTPResponse(); // get response string
 };
