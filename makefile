@@ -1,6 +1,6 @@
 CC=clang++
 FLAGS=-std=c++11
-BIN=connector
+BIN=makereq
 
 $(BIN): *.cpp
 	$(CC) $(FLAGS) $^ -o $(BIN)

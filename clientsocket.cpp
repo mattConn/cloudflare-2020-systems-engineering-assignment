@@ -1,4 +1,4 @@
-#include "connector.h"
+#include "clientsocket.h"
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
 #include <netdb.h> 
@@ -8,7 +8,7 @@
 using namespace std;
 
 // constructor
-Connector::Connector()
+ClientSocket::ClientSocket()
 {
 	// create socket using IPv4, TCP, IP; exit on failure
 	fileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
@@ -23,7 +23,7 @@ Connector::Connector()
 }
 
 // set port
-bool Connector::setHostPort(int port){
+bool ClientSocket::setHostPort(int port){
 	if(port<0) return false;
 
 	hostPort = port;
@@ -34,7 +34,7 @@ bool Connector::setHostPort(int port){
 }
 
 // connect to url
-bool Connector::connectTo(string &urlString)
+bool ClientSocket::connectTo(string &urlString)
 {
 
  	// get host data, for converting url to ip
@@ -55,7 +55,7 @@ bool Connector::connectTo(string &urlString)
 }
 
 // make request to url after connection
-bool Connector::makeHTTPRequest()
+bool ClientSocket::makeHTTPRequest()
 {
 
 	return true;

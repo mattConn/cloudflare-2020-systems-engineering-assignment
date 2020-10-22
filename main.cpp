@@ -1,21 +1,21 @@
 #include <iostream>
 #include <string>
-#include "connector.h" 
+#include "clientsocket.h" 
 
 using namespace std;
 
 int main()
 {
 	string url = "foobiebletch.net";
-	Connector c;
-	c.connectTo(url);
+	ClientSocket socket;
+	socket.connectTo(url);
 	
-	if(!c.isConnected())
+	if(!socket.isConnected())
 		cout << "Could not connect to host " << url << endl;
 	else
 	{
 		cout << "Connected to host " << url << endl;
-		cout << "Host IP: " << c.getHostIPString() << endl;
+		cout << "Host IP: " << socket.getHostIPString() << endl;
 	}
 	
 

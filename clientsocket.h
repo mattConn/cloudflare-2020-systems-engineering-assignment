@@ -4,7 +4,7 @@
 
 using namespace std;
 
-class Connector {
+class ClientSocket {
  	// socket file descriptor
 	int fileDescriptor = 0;
 
@@ -26,7 +26,7 @@ class Connector {
 
 public:
 
-	Connector(); // default constructor
+	ClientSocket(); // default constructor
 
 	// methods
 	//========
