@@ -1,10 +1,11 @@
 #include <iostream>
+#include "connector.h" 
 
 using namespace std;
 
 int main()
 {
-	cout << "TEST" << endl;
+	Connector c;
 
 	return 0;
 }
