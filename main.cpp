@@ -95,9 +95,21 @@ int main(int argc, char *argv[])
 		cout << "Could not connect to host " << url << endl;
 		return 1;
 	}
+	
+	// ready to make requests
+	// ======================
 
-	socket.makeRequest();
-	cout << socket.getResponse() << endl;
+	const char *greenText = "\033[1;32m";
+	const char *defaultText = "\033[0m";
+	int responseCount = 1;
+	while(responseCount <= requestCount)
+	{
+		socket.makeRequest();
+		cout << greenText << "[Response #" << responseCount << "]" << endl;
+		cout << defaultText << socket.getResponse() << endl;
+
+		responseCount++;
+	}
 
 	return 0;
 }
