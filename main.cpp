@@ -8,7 +8,7 @@ int main()
 {
 	string url = "foobiebletch.net";
 	ClientSocket socket;
-	socket.URLToIP(url);
+	socket.setHostIP(url);
 	socket.makeSocket();
 	socket.connectToHost();
 	

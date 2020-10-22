@@ -22,6 +22,13 @@ ClientSocket::ClientSocket(string &url) : ClientSocket()
 		cerr << "Could not make socket. Exiting." << endl;
 		exit(EXIT_FAILURE);
 	}
+
+	if(!setHostIP(url))
+	{
+		cerr << "Bad address:" << url << "." << endl;
+		exit(EXIT_FAILURE);
+	}
+
 	
 }
 
@@ -36,7 +43,7 @@ bool ClientSocket::makeSocket()
 }
 
 // convert url
-bool ClientSocket::URLToIP(string &url)
+bool ClientSocket::setHostIP(string &url)
 {
  	// get host data, for converting url to ip
 	hostEntry = gethostbyname(url.c_str());
@@ -46,6 +53,8 @@ bool ClientSocket::URLToIP(string &url)
 
 	// convert address from string to bin, store in sin_addr
     if(inet_pton(AF_INET, hostIPString, &hostAddress.sin_addr) <= 0) return false;
+
+	hostURL = url;
 
 	return true;
 }

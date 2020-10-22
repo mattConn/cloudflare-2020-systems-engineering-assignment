@@ -11,6 +11,7 @@ class ClientSocket {
 	int hostPort;
 
 	char *hostIPString;
+	string hostURL;
 
 	// buffer for response
 	char responseString[1024] = {0};
@@ -36,7 +37,7 @@ public:
 	bool makeSocket(); 
 
 	// convert url to IPv4 IP address string
-	bool URLToIP(string &url);
+	bool setHostIP(string &url);
 
 	// port accessors
 	bool setHostPort(int port);
