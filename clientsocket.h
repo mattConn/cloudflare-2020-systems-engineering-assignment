@@ -27,11 +27,16 @@ class ClientSocket {
 public:
 
 	ClientSocket(); // default constructor
+	ClientSocket(string &url); // constructor with url 
 
 	// methods
 	//========
-	
-	bool makeSocket(); // set file descriptor
+
+	// set file descriptor
+	bool makeSocket(); 
+
+	// convert url to IPv4 IP address string
+	bool URLToIP(string &url);
 
 	// port accessors
 	bool setHostPort(int port);

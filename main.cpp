@@ -8,6 +8,7 @@ int main()
 {
 	string url = "foobiebletch.net";
 	ClientSocket socket;
+	socket.makeSocket();
 	socket.connectTo(url);
 	
 	if(!socket.isConnected())

@@ -10,14 +10,19 @@ using namespace std;
 // constructor
 ClientSocket::ClientSocket()
 {
+
+	hostAddress.sin_family = AF_INET; // set to IPv4
+	setHostPort(80);
+}
+
+// constructor with url
+ClientSocket::ClientSocket(string &url) : ClientSocket()
+{
 	if(!makeSocket())
 	{
 		cerr << "Could not make socket. Exiting." << endl;
 		exit(EXIT_FAILURE);
 	}
-
-	hostAddress.sin_family = AF_INET; // set to IPv4
-	setHostPort(80);
 }
 
 bool ClientSocket::makeSocket()
@@ -28,6 +33,12 @@ bool ClientSocket::makeSocket()
 	if(fileDescriptor < 0) return false;
 
 	return true;
+}
+
+// convert url
+bool ClientSocket::URLToIP(string &url)
+{
+	return false;
 }
 
 // set port
