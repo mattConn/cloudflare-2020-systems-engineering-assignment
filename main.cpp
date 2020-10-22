@@ -9,6 +9,7 @@ void printHelp();
 int main(int argc, char *argv[])
 {
 	string url;
+	int requestCount = 1;
 
 	// handle cli args
 	//================
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
 	}
 
 	// check args
-	for(int i=0; i < argc; i++)
+	for(int i=1; i < argc; i++)
 	{
 		string arg = argv[i];
 
@@ -33,14 +34,52 @@ int main(int argc, char *argv[])
 		}
 
 		// url 
-		if(arg == "--url")
+		else if(arg == "--url")
 		{
 			if(i+1 >= argc)
 			{
 				cerr << "Missing URL." << endl;
-				return 0;
+				return 1;
+			}
+			url = argv[++i];
+		}
+
+		// profile 
+		else if(arg == "--profile")
+		{
+			if(i+1 >= argc)
+			{
+				cerr << "Missing request count." << endl;
+				return 1;
+			}
+
+			// test for stoi failure
+			try {
+				requestCount = stoi(argv[++i]);
+			} catch(exception &err){
+				cerr << "Invalid request count " << argv[i] << ". Must be integer." << endl;
+				return 1;
+			}
+
+			// requestCount must be > 0
+			if(requestCount < 1)
+			{
+				cerr << "Invalid request count " << requestCount << ". Must be integer > 0." << endl;
+				return 1;
 			}
 		}
+		// invalid args
+		else {
+			cerr << "Invalid argument " << arg << ". Try --help" << endl;
+			return 1;
+		}
+	}
+	
+	// check if url specified
+	if(url.size() == 0)
+	{
+		cerr << "Missing URL. Specify with --url" << endl;
+		return 1;
 	}
 
 
