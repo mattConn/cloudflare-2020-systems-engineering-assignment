@@ -18,17 +18,18 @@ Connector::Connector()
 		exit(EXIT_FAILURE);
 	}
 
-	hostAddress->sin_family = AF_INET; // set to IPv4
+	hostAddress.sin_family = AF_INET; // set to IPv4
+	setHostPort(80);
 }
 
 // set port
-bool Connector::setPort(int portNum){
-	if(portNum<0) return false;
+bool Connector::setHostPort(int port){
+	if(port<0) return false;
 
-	port = portNum;
+	hostPort = port;
 
 	// set host port with network endianness
-	hostAddress->sin_port = htons(port); 
+	hostAddress.sin_port = htons(hostPort); 
 	return true;
 }
 
@@ -36,8 +37,19 @@ bool Connector::setPort(int portNum){
 bool Connector::connectTo(string &urlString)
 {
 
-	hostEntry = gethostbyname(urlString.c_str()); // get host data, for converting url to ip
-	hostIPString = inet_ntoa(*( (struct in_addr*) hostEntry->h_addr)); // convert ip to IPv4 dotted decimal str
+ 	// get host data, for converting url to ip
+	hostEntry = gethostbyname(urlString.c_str());
+
+	// convert ip to IPv4 dotted decimal str
+	hostIPString = inet_ntoa(*( (struct in_addr*) hostEntry->h_addr)); 
+
+	// convert address from string to bin
+    if(inet_pton(AF_INET, hostIPString, &hostAddress.sin_addr) <= 0) return false;
+
+	// connect to address and store sock fd
+    if (connect(fileDescriptor, (struct sockaddr *)&hostAddress, sizeof(hostAddress)) < 0) return false;
+	connected = true;
+
 
 	return true;
 }
@@ -45,7 +57,6 @@ bool Connector::connectTo(string &urlString)
 // make request to url after connection
 bool Connector::makeHTTPRequest()
 {
-	if(!isConnected) return false;
 
 	return true;
 }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <netdb.h>
 #include <string>
 
 using namespace std;
@@ -7,7 +8,7 @@ class Connector {
  	// socket file descriptor
 	int fileDescriptor = 0;
 
-	int port = 80;
+	int hostPort;
 
 	char *hostIPString;
 
@@ -15,13 +16,13 @@ class Connector {
 	char responseString[1024] = {0};
 
 	// connection status
-	bool isConnected = false;
+	bool connected = false;
 
 	// host information struct
 	struct hostent *hostEntry;
 
 	// host address struct
-	struct sockaddr_in *hostAddress;
+	struct sockaddr_in hostAddress;
 
 public:
 
@@ -31,10 +32,12 @@ public:
 	//========
 
 	// port accessors
-	bool setPort(int portNum);
-	int getPort() { return port; };
+	bool setHostPort(int port);
+	int getHostPort() { return hostPort; };
 
 	string getHostIPString(){ return hostIPString; };
+
+	bool isConnected(){ return connected; };
 
 	bool connectTo(string &urlString); // connect to url 
 	bool makeHTTPRequest(); // make request after connection 
