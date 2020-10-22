@@ -57,5 +57,6 @@ public:
 
 	bool connectToHost(); 
 	bool makeRequest(); // make request after connection 
+	string getRequest(){ return request; };
 	string getResponse(){ return response; }; // get response string
 };

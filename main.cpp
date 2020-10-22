@@ -99,14 +99,20 @@ int main(int argc, char *argv[])
 	// ready to make requests
 	// ======================
 
+	// terminal text coloring
 	const char *greenText = "\033[1;32m";
 	const char *defaultText = "\033[0m";
+
+	
+	cout << greenText << "[Request]" << defaultText << endl;
+	cout << socket.getRequest();
+
 	int responseCount = 1;
 	while(responseCount <= requestCount)
 	{
 		socket.makeRequest();
-		cout << greenText << "[Response #" << responseCount << "]" << endl;
-		cout << defaultText << socket.getResponse() << endl;
+		cout << greenText << "[Response #" << responseCount << "]" << defaultText << endl;
+		cout << socket.getResponse() << endl;
 
 		responseCount++;
 	}

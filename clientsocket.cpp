@@ -40,7 +40,7 @@ ClientSocket::ClientSocket(string &url) : ClientSocket()
 	}
 
 	// prepare request
-	request = "GET / HTTP/1.1\r\nHost: "+hostURL+"\r\n\r\n";
+	request = "GET "+hostURI+" HTTP/1.1\r\nHost: "+hostDomain+"\r\n\r\n";
 	
 }
 
@@ -85,7 +85,7 @@ bool ClientSocket::setHostIP(string &url)
 	formatHostURL(url);
 
  	// get host data, for converting url to ip
-	hostEntry = gethostbyname(url.c_str());
+	hostEntry = gethostbyname(hostDomain.c_str());
 
 	// convert ip to IPv4 dotted decimal str
 	hostIP = inet_ntoa(*( (struct in_addr*) hostEntry->h_addr)); 
@@ -94,10 +94,6 @@ bool ClientSocket::setHostIP(string &url)
     if(inet_pton(AF_INET, hostIP, &hostAddress.sin_addr) <= 0) return false;
 
 	hostURL = url;
-
-	cout << "URL: " << hostURL << endl;
-	cout << "URI: " << hostURI << endl;
-	cout << "DOMAIN: " << hostDomain << endl;
 
 	return true;
 }
