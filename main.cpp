@@ -88,15 +88,16 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	// ===================
+	// end handle cli args
+
+
+	// make socket, parse/convert url and connect
+	// ==========================================
 
 	ClientSocket socket(url);
-	/*
-	socket.makeSocket();
-	socket.setHostIP(url);
-	socket.connectToHost();
-	*/
 	
-	if(!socket.isConnected())
+	if(!socket.isConnected()) // check connection
 	{
 		cout << "Could not connect to host " << url << endl;
 		return 1;
@@ -104,27 +105,21 @@ int main(int argc, char *argv[])
 	
 	// ready to make requests
 	// ======================
-
-
 	
+	// display request
 	cout << greenTextColor << "[Request]" << defaultTextColor << endl;
 	cout << socket.getRequest();
 
-	Response r;
+	// make response obj for holding headers, body
+	Response response;
 
 	int responseCount = 1;
 	while(responseCount <= requestCount)
 	{
 		socket.makeRequest();
 		cout << greenTextColor << "[Response #" << responseCount << "]" << defaultTextColor << endl;
-		cout << socket.getResponse() << endl;
-		r.parse(socket.getResponse());
-
-		// check transfer encoding
-		if(r.headers["Transfer-Encoding"] == "chunked")
-			cout << "CHUNKED" << endl;
-		else
-			cout << "NOT CHUNKED" << endl;
+		cout << socket.getRawResponse() << endl;
+		response.parse(socket.getRawResponse());
 
 		responseCount++;
 	}

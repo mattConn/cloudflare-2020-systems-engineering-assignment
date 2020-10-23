@@ -124,7 +124,7 @@ bool ClientSocket::connectToHost()
 bool ClientSocket::makeRequest()
 {
 	send( fileDescriptor, (char *) request.c_str(), strlen(request.c_str()), 0);
-	read(fileDescriptor, response, sizeof(response));
+	read(fileDescriptor, rawResponse, sizeof(rawResponse));
 
 	return true;
 }
