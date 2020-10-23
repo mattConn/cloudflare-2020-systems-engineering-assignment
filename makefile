@@ -6,7 +6,7 @@ $(BIN): *.cpp
 	$(CC) $(FLAGS) $^ -o $(BIN)
 
 check:
-	./$(BIN)
+	./$(BIN) --url foobiebletch.net
 
 clean:
 	rm $(BIN)

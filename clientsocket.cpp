@@ -40,7 +40,7 @@ ClientSocket::ClientSocket(string &url) : ClientSocket()
 	}
 
 	// prepare request
-	request = "GET "+hostURI+" HTTP/1.1\r\nHost: "+hostDomain+"\r\n\r\n";
+	setRequest(hostURI, hostDomain);
 	
 }
 
@@ -128,3 +128,8 @@ bool ClientSocket::makeRequest()
 
 	return true;
 }
+
+void ClientSocket::setRequest(string uri, string domain)
+{
+	request = "GET "+uri+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
+};
