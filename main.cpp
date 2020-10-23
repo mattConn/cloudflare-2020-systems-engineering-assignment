@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
+#include <string.h>
 #include "clientsocket.h" 
+#include "response.h" 
 
 using namespace std;
 
@@ -107,12 +109,21 @@ int main(int argc, char *argv[])
 	cout << greenText << "[Request]" << defaultText << endl;
 	cout << socket.getRequest();
 
+	Response r;
+
 	int responseCount = 1;
 	while(responseCount <= requestCount)
 	{
 		socket.makeRequest();
 		cout << greenText << "[Response #" << responseCount << "]" << defaultText << endl;
 		cout << socket.getResponse() << endl;
+		r.parse(socket.getResponse());
+
+		// check transfer encoding
+		if(r.headers["Transfer-Encoding"] == "chunked")
+			cout << "CHUNKED" << endl;
+		else
+			cout << "NOT CHUNKED" << endl;
 
 		responseCount++;
 	}
