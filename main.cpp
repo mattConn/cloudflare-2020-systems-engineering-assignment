@@ -8,6 +8,10 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+	// terminal text coloring
+	const char *greenTextColor = "\033[1;32m";
+	const char *defaultTextColor = "\033[0m";
+
 	string helpString = "Usage: makereq --url <url> [--profile <number of requests>]";
 	string url;
 	int requestCount = 1;
@@ -101,12 +105,9 @@ int main(int argc, char *argv[])
 	// ready to make requests
 	// ======================
 
-	// terminal text coloring
-	const char *greenText = "\033[1;32m";
-	const char *defaultText = "\033[0m";
 
 	
-	cout << greenText << "[Request]" << defaultText << endl;
+	cout << greenTextColor << "[Request]" << defaultTextColor << endl;
 	cout << socket.getRequest();
 
 	Response r;
@@ -115,7 +116,7 @@ int main(int argc, char *argv[])
 	while(responseCount <= requestCount)
 	{
 		socket.makeRequest();
-		cout << greenText << "[Response #" << responseCount << "]" << defaultText << endl;
+		cout << greenTextColor << "[Response #" << responseCount << "]" << defaultTextColor << endl;
 		cout << socket.getResponse() << endl;
 		r.parse(socket.getResponse());
 
