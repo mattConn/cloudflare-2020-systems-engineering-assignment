@@ -117,9 +117,31 @@ int main(int argc, char *argv[])
 	while(responseCount <= requestCount)
 	{
 		socket.makeRequest();
-		cout << greenTextColor << "[Response #" << responseCount << "]" << defaultTextColor << endl;
-		cout << socket.getRawResponse() << endl;
-		response.parse(socket.getRawResponse());
+
+		// display raw response
+		//cout << greenTextColor << "[Response #" << responseCount << "]" << defaultTextColor << endl;
+		//cout << socket.getRawResponse() << endl;
+
+		string rawResponse = socket.getRawResponse();
+		int pos = rawResponse.find("\r\n\r\n");
+		if(pos == string::npos)
+		{
+			cerr << "NOT FOUND" << endl;
+			return 1;
+		}	
+
+		// headers
+		string headers = rawResponse.substr(0, pos); 
+		// body
+		string body = rawResponse.substr(pos+4); 
+
+		cout << "HEADERS:" << endl;
+		cout << headers << endl;
+
+		cout << "BODY:" << endl;
+		cout << body << endl;
+
+		//response.parse(socket.getRawResponse());
 
 		responseCount++;
 	}
