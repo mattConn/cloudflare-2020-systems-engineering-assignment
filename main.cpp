@@ -135,13 +135,7 @@ int main(int argc, char *argv[])
 		// body
 		string body = rawResponse.substr(pos+4); 
 
-		cout << "HEADERS:" << endl;
-		cout << headers << endl;
-
-		cout << "BODY:" << endl;
-		cout << body << endl;
-
-		//response.parse(socket.getRawResponse());
+		response.setHeaders(headers);
 
 		responseCount++;
 	}

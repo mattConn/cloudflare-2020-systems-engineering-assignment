@@ -8,13 +8,12 @@ using namespace std;
 // transform response string
 Response::Response(string r)
 {
-	parse(r);
 }
 
-bool Response::parse(string r)
+bool Response::setHeaders(string rawResponse)
 {
 	// get data from response
-	istringstream ss(r);
+	istringstream ss(rawResponse);
 	string line;
 
 	// status line
