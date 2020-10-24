@@ -122,7 +122,6 @@ int main(int argc, char *argv[])
 		{
 			printGreen("Request");
 			cout << socket.getRequest();
-			printGreen("Making "+to_string(requestCount)+" Request(s)...");
 			cout << endl;
 		}
 
@@ -157,6 +156,10 @@ int main(int argc, char *argv[])
 		{
 			printGreen("Response Body");
 			cout << response.body << endl;
+			printGreen("End Response Body");
+
+			if(requestCount > 1) // if profiling
+				printGreen("Making "+to_string(requestCount)+" Requests...");
 		}
 
 		responseCount++;
@@ -172,7 +175,8 @@ int main(int argc, char *argv[])
 	// =====================
 	if(requestCount > 1)
 	{
-		// store error codes
+		// store error codes and count success
+		int successfulRequests = 0; // count success
 		vector<string> errCodes;
 		for(auto &r: responseList)
 		{
@@ -182,12 +186,20 @@ int main(int argc, char *argv[])
  				if(find(errCodes.begin(), errCodes.end(), r.status) == errCodes.end())
 					errCodes.push_back(r.status);
 			}
+			else
+			{
+				successfulRequests++;
+			}
 		}
+
+		// calc success rate
+		float successRate = ((float) successfulRequests)/((float) responseList.size());
 
 		// display 
 		printGreen("Profiling Results");
 		cout << endl;
 		printGreen("Requests made: "+to_string(responseList.size()));
+		printGreen("Success Rate: "+to_string((int) (successRate*100.0))+"%");
 		printGreen("Error Codes");
 		if(!errCodes.empty())
 		{
