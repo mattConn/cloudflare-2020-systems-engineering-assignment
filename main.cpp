@@ -122,6 +122,8 @@ int main(int argc, char *argv[])
 		{
 			printGreen("Request");
 			cout << socket.getRequest();
+			printGreen("Making "+to_string(requestCount)+" Request(s)...");
+			cout << endl;
 		}
 
 		// initial request
@@ -166,8 +168,8 @@ int main(int argc, char *argv[])
 
 	} // end requests
 
-	// profiling
-	// =========
+	// gather profiling data
+	// =====================
 	if(requestCount > 1)
 	{
 		// store error codes
@@ -190,6 +192,7 @@ int main(int argc, char *argv[])
 		{
 			printGreen("Error Codes");
 			for(auto &c : errCodes) cout << c << endl;
+			cout << endl;
 		}
 	}
 
