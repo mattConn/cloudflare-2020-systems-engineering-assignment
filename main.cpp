@@ -10,7 +10,7 @@
 using namespace std;
 
 // green terminal text
-void printGreen(string msg);
+void printMsg(string msg);
 
 int main(int argc, char *argv[])
 {
@@ -140,19 +140,11 @@ int main(int argc, char *argv[])
 		// read from stream until 0 char if chunked
 		if (response.headers["Transfer-Encoding"] == "chunked")
 		{
-			int chunkCount = 1;
 			while(true)
 			{
-				cout << "\033[H\033[J"; // clear screen
-				printGreen("Reading Chunked Response "+to_string(responseCount+1)+"/"+to_string(requestCount));
-				printGreen("Waiting For Chunk "+to_string(chunkCount+1));
-
 				timeBegin = time(NULL);
 				if(!socket.readResponse()) break;
 				timeEnd = time(NULL);
-
-				printGreen("Received Chunk "+to_string(chunkCount+1));
-				cout << endl;
 
 				timeTotal += timeEnd - timeBegin;
 
@@ -160,7 +152,6 @@ int main(int argc, char *argv[])
 				response.body.pop_back(); // chomp
 				response.body.pop_back(); // and again
 
-				chunkCount++;
 				// look for 0 chunk size and break
 				if (socket.getRawResponse().find("\r\n0\r\n") != string::npos)
 					break;
@@ -170,7 +161,13 @@ int main(int argc, char *argv[])
 			// get rest of response body if missing
 			while(response.body.size() < stoi(response.headers["Content-Length"]))
 			{
-			socket.readResponse();
+
+			timeBegin = time(NULL);
+			if(!socket.readResponse()) break;
+			timeEnd = time(NULL);
+
+			timeTotal += timeEnd - timeBegin;
+
 			response.body += socket.getRawResponse();
 			response.body.pop_back(); // chomp
 			response.body.pop_back(); // and again
@@ -183,7 +180,7 @@ int main(int argc, char *argv[])
 			cout  << response.body << endl;
 
 			if(requestCount > 1) // if profiling
-				printGreen("Making "+to_string(requestCount)+" Requests...");
+				printMsg("Making "+to_string(requestCount-1)+" More Requests...");
 		}
 
 		responseCount++;
@@ -251,20 +248,20 @@ int main(int argc, char *argv[])
 		float successRate = ((float) successfulRequests)/((float) responseList.size());
 
 		// display 
-		printGreen("Profiling Results");
+		printMsg("Profiling Results");
 		cout << endl;
-		printGreen("Requests made: "+to_string(responseList.size()));
-		printGreen("Fastest Time: "+to_string(fastestTime)+"s");
-		printGreen("Slowest Time: "+to_string(slowestTime)+"s");
-		printGreen("Mean Time: "+to_string(timeSum/responseList.size())+"s");
+		printMsg("Requests made: "+to_string(responseList.size()));
+		printMsg("Fastest Time: "+to_string(fastestTime)+"s");
+		printMsg("Slowest Time: "+to_string(slowestTime)+"s");
+		printMsg("Mean Time: "+to_string(timeSum/responseList.size())+"s");
 
 		// for median
 		sort(responseTimes.begin(),responseTimes.end());
-		printGreen("Median Time: "+to_string(responseTimes[responseTimes.size()/2])+"s");
+		printMsg("Median Time: "+to_string(responseTimes[responseTimes.size()/2])+"s");
 
-		printGreen("Success Rate: "+to_string((int) (successRate*100.0))+"%");
+		printMsg("Success Rate: "+to_string((int) (successRate*100.0))+"%");
 
-		printGreen("Error Codes");
+		printMsg("Error Codes");
 		if(!errCodes.empty())
 		{
 			for(auto &c : errCodes) cout << c << endl;
@@ -275,17 +272,15 @@ int main(int argc, char *argv[])
 			cout << "No Error Codes" << endl;
 		}
 
-		printGreen("Smallest Response: "+to_string(smallestRead)+" Bytes");
-		printGreen("Largest Response: "+to_string(largestRead)+" Bytes");
+		printMsg("Smallest Response: "+to_string(smallestRead)+" Bytes");
+		printMsg("Largest Response: "+to_string(largestRead)+" Bytes");
 	}
 
 
 	return 0;
 }
 
-void printGreen(string msg)
+void printMsg(string msg)
 {
-	cout << "\033[1;32m"
-		 << "[ " << msg << " ]"
-		 << "\033[0m" << endl;
+	cout << "[ "+msg+" ]" << endl;
 }
