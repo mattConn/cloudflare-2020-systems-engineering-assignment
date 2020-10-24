@@ -1,5 +1,6 @@
 #include <map>
 #include <string>
+#include <time.h>
 
 using namespace std;
 
@@ -10,7 +11,8 @@ struct Response
 	bool success = true;		  // depends on status
 	map<string, string> headers; // header lines
 	string body;				 // body of request
-	int bytesRead;				// bytes read from response
+	int bytesRead = 0;				// bytes read from response
+	time_t time = 0;					// response time
 
 	// constructors
 	Response(){};		// default

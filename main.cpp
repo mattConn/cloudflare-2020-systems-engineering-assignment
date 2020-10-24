@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <string.h>
+#include <time.h>
 #include <vector>
 #include "clientsocket.h"
 #include "response.h"
@@ -101,7 +102,14 @@ int main(int argc, char *argv[])
 	// ====================================================
 
 	int responseCount = 0;
-	vector<Response> responseList;
+	vector<Response> responseList; // all responses
+	vector<int> responseTimes; // all response times
+
+	// timing
+	time_t timeBegin;
+	time_t timeEnd;
+	time_t timeTotal = 0;
+
 	// response loop
 	while (responseCount < requestCount)
 	{
@@ -125,9 +133,14 @@ int main(int argc, char *argv[])
 			cout << endl;
 		}
 
+
 		// initial request
+		// ===============
+		timeBegin = time(0);
 		socket.makeRequest();
 		socket.readResponse();
+		timeEnd = time(0);
+		timeTotal += timeEnd - timeBegin;
 
 		// read headers,status into response obj map
 		Response response(socket.getRawResponse());
@@ -139,8 +152,13 @@ int main(int argc, char *argv[])
 		// read from stream until 0 char if chunked
 		if (response.headers["Transfer-Encoding"] == "chunked")
 		{
-			while (socket.readResponse())
+			while(true)
 			{
+				timeBegin = time(0);
+				if(!socket.readResponse()) break;
+				timeEnd = time(0);
+				timeTotal += timeEnd - timeBegin;
+
 				response.body += socket.getRawResponse();
 				response.body.pop_back(); // chomp
 				response.body.pop_back(); // and again
@@ -166,6 +184,8 @@ int main(int argc, char *argv[])
 
 		// store total byte size
 		response.bytesRead = socket.getTotalBytesRead();
+		// store response time
+		response.time = timeTotal;
 
 		responseList.push_back(response); // store response obj
 
@@ -175,6 +195,10 @@ int main(int argc, char *argv[])
 	// =====================
 	if(requestCount > 1)
 	{
+		// extrema of response times 
+		time_t fastestTime = 0;
+		time_t slowestTime = 0;
+
 		// extrema of read sizes 
 		int largestRead = 0;
 		int smallestRead = 0;
@@ -184,6 +208,15 @@ int main(int argc, char *argv[])
 		vector<string> errCodes;
 		for(auto &r: responseList)
 		{
+			// calc extrema of response times
+			if(fastestTime == 0 && slowestTime == 0)
+				fastestTime = slowestTime = r.time;
+			else if(r.time < fastestTime) // fastest 
+				fastestTime = r.time;
+			else if(r.time > slowestTime) // s l o w
+				slowestTime = r.time;
+
+
 			// get read sizes
 			if(largestRead == 0 && smallestRead == 0)
 				largestRead = smallestRead = r.bytesRead;	
@@ -213,6 +246,8 @@ int main(int argc, char *argv[])
 		printGreen("Profiling Results");
 		cout << endl;
 		printGreen("Requests made: "+to_string(responseList.size()));
+		printGreen("Fastest Time: "+to_string(fastestTime)+"s");
+		printGreen("Slowest Time: "+to_string(slowestTime)+"s");
 		printGreen("Success Rate: "+to_string((int) (successRate*100.0))+"%");
 
 		printGreen("Error Codes");
