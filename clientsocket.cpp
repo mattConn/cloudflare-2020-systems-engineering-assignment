@@ -124,7 +124,15 @@ bool ClientSocket::connectToHost()
 bool ClientSocket::makeRequest()
 {
 	send( fileDescriptor, (char *) request.c_str(), strlen(request.c_str()), 0);
-	read(fileDescriptor, rawResponse, sizeof(rawResponse));
+
+	return true;
+}
+
+// make request to url after connection
+bool ClientSocket::readResponse()
+{
+	if( read(fileDescriptor, rawResponse, 1024) == 0 )
+		return false;
 
 	return true;
 }

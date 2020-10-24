@@ -57,6 +57,7 @@ public:
 
 	bool connectToHost(); 
 	bool makeRequest(); // make request after connection 
+	bool readResponse(); // make request after connection 
 	string getRequest(){ return request; };
 	void setRequest(string uri, string domain);
 	string getRawResponse(){ return rawResponse; }; // get response string

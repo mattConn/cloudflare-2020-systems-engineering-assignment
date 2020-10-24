@@ -8,9 +8,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	// terminal text coloring
-	const char *greenTextColor = "\033[1;32m";
-	const char *defaultTextColor = "\033[0m";
 
 	string helpString = "Usage: makereq --url <url> [--profile <number of requests>]";
 	string url;
@@ -107,38 +104,41 @@ int main(int argc, char *argv[])
 	// ======================
 	
 	// display request
-	cout << greenTextColor << "[Request]" << defaultTextColor << endl;
+	cout << "\t\t\t<<< REQUEST >>>" << endl;
 	cout << socket.getRequest();
 
 	// make response obj for holding headers, body
 	Response response;
 
-	int responseCount = 1;
-	while(responseCount <= requestCount)
+	// initial request
+	socket.makeRequest();
+	socket.readResponse();
+	response.body += socket.getRawResponse();
+	response.body.pop_back(); // chomp
+	response.body.pop_back(); // and again
+
+	// read headers
+	response.setHeaders(socket.getRawResponse());
+
+	// read on single send if chunked
+	if(response.headers["Transfer-Encoding"] == "chunked")
 	{
-		socket.makeRequest();
-
-		// display raw response
-		//cout << greenTextColor << "[Response #" << responseCount << "]" << defaultTextColor << endl;
-		//cout << socket.getRawResponse() << endl;
-
-		string rawResponse = socket.getRawResponse();
-		int pos = rawResponse.find("\r\n\r\n");
-		if(pos == string::npos)
+	
+		while(socket.readResponse())
 		{
-			cerr << "NOT FOUND" << endl;
-			return 1;
-		}	
 
-		// headers
-		string headers = rawResponse.substr(0, pos); 
-		// body
-		string body = rawResponse.substr(pos+4); 
+			response.body += socket.getRawResponse();
+			response.body.pop_back(); // chomp
+			response.body.pop_back(); // and again
 
-		response.setHeaders(headers);
+			// look for 0 chunk size and break
+			if(socket.getRawResponse().find("\r\n0\r\n") != string::npos) break;
 
-		responseCount++;
+		}
 	}
+
+	cout << "\t\t\t<<< RESPONSE >>>" << endl;
+	cout << response.body << endl;
 
 	return 0;
 }
