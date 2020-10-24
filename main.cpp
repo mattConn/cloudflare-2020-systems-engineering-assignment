@@ -175,11 +175,24 @@ int main(int argc, char *argv[])
 	// =====================
 	if(requestCount > 1)
 	{
+		// extrema of read sizes 
+		int largestRead = 0;
+		int smallestRead = 0;
+
 		// store error codes and count success
 		int successfulRequests = 0; // count success
 		vector<string> errCodes;
 		for(auto &r: responseList)
 		{
+			// get read sizes
+			if(largestRead == 0 && smallestRead == 0)
+				largestRead = smallestRead = r.bytesRead;	
+			else if(r.bytesRead > largestRead) // largest
+				largestRead = r.bytesRead;	
+			else if(r.bytesRead < smallestRead) // smallest
+				smallestRead = r.bytesRead;	
+
+			// get error codes and count successes
 			if(!r.success) // failed
 			{
 				// unique error code?
@@ -190,6 +203,7 @@ int main(int argc, char *argv[])
 			{
 				successfulRequests++;
 			}
+
 		}
 
 		// calc success rate
@@ -200,13 +214,20 @@ int main(int argc, char *argv[])
 		cout << endl;
 		printGreen("Requests made: "+to_string(responseList.size()));
 		printGreen("Success Rate: "+to_string((int) (successRate*100.0))+"%");
+
 		printGreen("Error Codes");
 		if(!errCodes.empty())
 		{
 			for(auto &c : errCodes) cout << c << endl;
 			cout << endl;
 		}
-		cout << "No Error Codes" << endl;
+		else
+		{
+			cout << "No Error Codes" << endl;
+		}
+
+		printGreen("Smallest Response: "+to_string(smallestRead)+" Bytes");
+		printGreen("Largest Response: "+to_string(largestRead)+" Bytes");
 	}
 
 
