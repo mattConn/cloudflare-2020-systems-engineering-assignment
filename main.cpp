@@ -94,61 +94,63 @@ int main(int argc, char *argv[])
 	// end handle cli args
 
 
-	// make socket, parse/convert url and connect
-	// ==========================================
-
-	ClientSocket socket(url);
-	
-	if(!socket.isConnected()) // check connection
-	{
-		cout << "Could not connect to host " << url << endl;
-		return 1;
-	}
-	
-	// ready to make requests
-	// ======================
-	
-	// display request
-	printGreen("Request");
-	cout << socket.getRequest();
-
+	// make socket, parse/convert url, connect then request
+	// ====================================================
 
 	int responseCount = 0;
+	// response loop
 	while(responseCount < requestCount)
 	{
-		// make response obj for holding headers, body
-		Response response;
 
-		// initial request
-		socket.makeRequest();
-		socket.readResponse();
-
-		// read headers
-		response.setHeaders(socket.getRawResponse());
-
-		response.body += socket.getRawResponse();
-		response.body.pop_back(); // chomp
-		response.body.pop_back(); // and again
-
-		// read from stream until 0 char if chunked
-		if(response.headers["Transfer-Encoding"] == "chunked")
+		ClientSocket socket(url);
+		
+		if(!socket.isConnected()) // check connection
 		{
-			while(socket.readResponse())
-			{
-				response.body += socket.getRawResponse();
-				response.body.pop_back(); // chomp
-				response.body.pop_back(); // and again
-
-				// look for 0 chunk size and break
-				if(socket.getRawResponse().find("\r\n0\r\n") != string::npos) break;
-			}
+			cout << "Could not connect to host " << url << endl;
+			return 1;
 		}
+		
+		// ready to make requests
+		// ======================
+		
+		// display request
+		printGreen("Request");
+		cout << socket.getRequest();
 
-		responseCount++;
 
-		printGreen("Response "+to_string(responseCount));
-		cout << response.body << endl;
-		printGreen("End Response "+to_string(responseCount));
+			// make response obj for holding headers, body
+			Response response;
+
+			// initial request
+			socket.makeRequest();
+			socket.readResponse();
+
+			// read headers
+			response.setHeaders(socket.getRawResponse());
+
+			response.body += socket.getRawResponse();
+			response.body.pop_back(); // chomp
+			response.body.pop_back(); // and again
+
+			// read from stream until 0 char if chunked
+			if(response.headers["Transfer-Encoding"] == "chunked")
+			{
+				while(socket.readResponse())
+				{
+					response.body += socket.getRawResponse();
+					response.body.pop_back(); // chomp
+					response.body.pop_back(); // and again
+
+					// look for 0 chunk size and break
+					if(socket.getRawResponse().find("\r\n0\r\n") != string::npos) break;
+				}
+			}
+
+			responseCount++;
+
+			printGreen("Response "+to_string(responseCount));
+			printGreen(to_string(socket.getTotalBytesRead())+" Bytes Read");
+			cout << response.body << endl;
 
 	} // end requests
 

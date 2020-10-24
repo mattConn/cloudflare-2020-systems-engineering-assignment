@@ -18,6 +18,8 @@ class ClientSocket {
 
 	// buffer for response
 	char rawResponse[1024] = {0};
+	int bytesRead = 0;
+	int totalBytesRead = 0;
 	string request;
 
 	// connection status
@@ -56,9 +58,18 @@ public:
 	bool isConnected(){ return connected; };
 
 	bool connectToHost(); 
+
 	bool makeRequest(); // make request after connection 
+
 	bool readResponse(); // make request after connection 
+
 	string getRequest(){ return request; };
+
 	void setRequest(string uri, string domain);
+
 	string getRawResponse(){ return rawResponse; }; // get response string
+
+	int getBytesRead(){ return bytesRead; };
+	int getTotalBytesRead(){ return totalBytesRead; };
+
 };
