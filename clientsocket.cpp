@@ -4,7 +4,7 @@
 #include <netdb.h> 
 #include <unistd.h> 
 #include <iostream> 
-#include <string> 
+#include <string.h> 
 
 using namespace std;
 
