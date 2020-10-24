@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <vector>
+#include <algorithm>
 #include "clientsocket.h"
 #include "response.h"
 
@@ -109,11 +110,10 @@ int main(int argc, char *argv[])
 	time_t timeBegin;
 	time_t timeEnd;
 	time_t timeSum = 0; // for mean time
-	time_t timeTotal = 0;
-
 	// response loop
 	while (responseCount < requestCount)
 	{
+		time_t timeTotal = 0;
 
 		ClientSocket socket(url);
 
@@ -137,10 +137,10 @@ int main(int argc, char *argv[])
 
 		// initial request
 		// ===============
-		timeBegin = time(0);
 		socket.makeRequest();
+		timeBegin = time(NULL);
 		socket.readResponse();
-		timeEnd = time(0);
+		timeEnd = time(NULL);
 		timeTotal += timeEnd - timeBegin;
 
 		// read headers,status into response obj map
@@ -153,17 +153,27 @@ int main(int argc, char *argv[])
 		// read from stream until 0 char if chunked
 		if (response.headers["Transfer-Encoding"] == "chunked")
 		{
+			int chunkCount = 1;
 			while(true)
 			{
-				timeBegin = time(0);
+				cout << "\033[H\033[J"; // clear screen
+				printGreen("Reading Chunked Response "+to_string(responseCount+1)+"/"+to_string(requestCount));
+				printGreen("Waiting For Chunk "+to_string(chunkCount+1));
+
+				timeBegin = time(NULL);
 				if(!socket.readResponse()) break;
-				timeEnd = time(0);
+				timeEnd = time(NULL);
+
+				printGreen("Received Chunk "+to_string(chunkCount+1));
+				cout << endl;
+
 				timeTotal += timeEnd - timeBegin;
 
 				response.body += socket.getRawResponse();
 				response.body.pop_back(); // chomp
 				response.body.pop_back(); // and again
 
+				chunkCount++;
 				// look for 0 chunk size and break
 				if (socket.getRawResponse().find("\r\n0\r\n") != string::npos)
 					break;
@@ -187,6 +197,7 @@ int main(int argc, char *argv[])
 		response.bytesRead = socket.getTotalBytesRead();
 		// store response time
 		response.time = timeTotal;
+		responseTimes.push_back(timeTotal);
 		timeSum += timeTotal; // for mean
 
 		responseList.push_back(response); // store response obj
@@ -251,6 +262,11 @@ int main(int argc, char *argv[])
 		printGreen("Fastest Time: "+to_string(fastestTime)+"s");
 		printGreen("Slowest Time: "+to_string(slowestTime)+"s");
 		printGreen("Mean Time: "+to_string(timeSum/responseList.size())+"s");
+
+		// for median
+		sort(responseTimes.begin(),responseTimes.end());
+		printGreen("Median Time: "+to_string(responseTimes[responseTimes.size()/2])+"s");
+
 		printGreen("Success Rate: "+to_string((int) (successRate*100.0))+"%");
 
 		printGreen("Error Codes");
