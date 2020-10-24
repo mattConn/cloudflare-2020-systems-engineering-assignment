@@ -8,17 +8,19 @@ using namespace std;
 // transform response string
 Response::Response(string rawResponse)
 {
-	setHeaders(rawResponse);
+	setHeadersAndBody(rawResponse);
 }
 
-bool Response::setHeaders(string rawResponse)
+bool Response::setHeadersAndBody(string rawResponse)
 {
 	// get data from response
-	istringstream ss(rawResponse);
+	int splitPos = rawResponse.find("\r\n\r\n");
+	istringstream ssHeaders(rawResponse.substr(0, splitPos));
+	body = rawResponse.substr(splitPos+4);
 	string line;
 
 	// status line
-	if (getline(ss, line))
+	if (getline(ssHeaders, line))
 	{
 		line.pop_back(); // carriage return
 		status = line;
@@ -27,7 +29,7 @@ bool Response::setHeaders(string rawResponse)
 	}
 
 	// headers
-	while (getline(ss, line) && line != "\r")
+	while (getline(ssHeaders, line) && line != "\r")
 	{
 		line.pop_back(); // remove carriage return
 		int pos = line.find(": ");

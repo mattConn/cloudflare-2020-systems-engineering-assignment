@@ -126,15 +126,6 @@ int main(int argc, char *argv[])
 		// ready to make requests
 		// ======================
 
-		// display request on first iteration
-		if(responseCount ==0)
-		{
-			printGreen("Request");
-			cout << socket.getRequest();
-			cout << endl;
-		}
-
-
 		// initial request
 		// ===============
 		socket.makeRequest();
@@ -143,12 +134,8 @@ int main(int argc, char *argv[])
 		timeEnd = time(NULL);
 		timeTotal += timeEnd - timeBegin;
 
-		// read headers,status into response obj map
+		// read headers,status and body into response obj
 		Response response(socket.getRawResponse());
-
-		response.body += socket.getRawResponse();
-		response.body.pop_back(); // chomp
-		response.body.pop_back(); // and again
 
 		// read from stream until 0 char if chunked
 		if (response.headers["Transfer-Encoding"] == "chunked")
@@ -178,14 +165,22 @@ int main(int argc, char *argv[])
 				if (socket.getRawResponse().find("\r\n0\r\n") != string::npos)
 					break;
 			}
+		} else if(response.headers.find("Content-Length") != response.headers.end())
+		{
+			// get rest of response body if missing
+			while(response.body.size() < stoi(response.headers["Content-Length"]))
+			{
+			socket.readResponse();
+			response.body += socket.getRawResponse();
+			response.body.pop_back(); // chomp
+			response.body.pop_back(); // and again
+			}
 		}
 
 		// display response body on first iteration
 		if(responseCount == 0)
 		{
-			printGreen("Response Body");
-			cout << response.body << endl;
-			printGreen("End Response Body");
+			cout  << response.body << endl;
 
 			if(requestCount > 1) // if profiling
 				printGreen("Making "+to_string(requestCount)+" Requests...");
