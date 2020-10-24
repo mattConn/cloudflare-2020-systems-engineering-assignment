@@ -1,11 +1,14 @@
 #include <iostream>
 #include <string>
+#include <string.h>
 #include "clientsocket.h" 
+#include "response.h" 
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+
 	string helpString = "Usage: makereq --url <url> [--profile <number of requests>]";
 	string url;
 	int requestCount = 1;
@@ -82,15 +85,16 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	// ===================
+	// end handle cli args
+
+
+	// make socket, parse/convert url and connect
+	// ==========================================
 
 	ClientSocket socket(url);
-	/*
-	socket.makeSocket();
-	socket.setHostIP(url);
-	socket.connectToHost();
-	*/
 	
-	if(!socket.isConnected())
+	if(!socket.isConnected()) // check connection
 	{
 		cout << "Could not connect to host " << url << endl;
 		return 1;
@@ -98,24 +102,43 @@ int main(int argc, char *argv[])
 	
 	// ready to make requests
 	// ======================
-
-	// terminal text coloring
-	const char *greenText = "\033[1;32m";
-	const char *defaultText = "\033[0m";
-
 	
-	cout << greenText << "[Request]" << defaultText << endl;
+	// display request
+	cout << "\t\t\t<<< REQUEST >>>" << endl;
 	cout << socket.getRequest();
 
-	int responseCount = 1;
-	while(responseCount <= requestCount)
-	{
-		socket.makeRequest();
-		cout << greenText << "[Response #" << responseCount << "]" << defaultText << endl;
-		cout << socket.getResponse() << endl;
+	// make response obj for holding headers, body
+	Response response;
 
-		responseCount++;
+	// initial request
+	socket.makeRequest();
+	socket.readResponse();
+	response.body += socket.getRawResponse();
+	response.body.pop_back(); // chomp
+	response.body.pop_back(); // and again
+
+	// read headers
+	response.setHeaders(socket.getRawResponse());
+
+	// read on single send if chunked
+	if(response.headers["Transfer-Encoding"] == "chunked")
+	{
+	
+		while(socket.readResponse())
+		{
+
+			response.body += socket.getRawResponse();
+			response.body.pop_back(); // chomp
+			response.body.pop_back(); // and again
+
+			// look for 0 chunk size and break
+			if(socket.getRawResponse().find("\r\n0\r\n") != string::npos) break;
+
+		}
 	}
+
+	cout << "\t\t\t<<< RESPONSE >>>" << endl;
+	cout << response.body << endl;
 
 	return 0;
 }
