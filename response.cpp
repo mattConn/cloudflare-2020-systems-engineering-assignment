@@ -19,7 +19,10 @@ bool Response::setHeaders(string rawResponse)
 
 	// status line
 	if (getline(ss, line))
+	{
+		line.pop_back(); // carriage return
 		status = line;
+	}
 
 	// headers
 	while (getline(ss, line) && line != "\r")

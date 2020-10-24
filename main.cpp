@@ -166,17 +166,33 @@ int main(int argc, char *argv[])
 
 	} // end requests
 
-	// display 
-	printGreen("Profiling Results");
-	cout << endl;
-	for(int i=0; i<responseList.size();i++)
+	// profiling
+	// =========
+	if(requestCount > 1)
 	{
-			printGreen("Response: "+to_string(i+1));
-			cout << "Status: " << responseList[i].status << endl;// status line
-			cout << "Bytes: " << responseList[i].bytesRead << endl; // byte size
-			cout << "Chunked: " << (responseList[i].headers["Transfer-Encoding"] == "chunked" ? "Yes" : "No")
-			<< endl;
+		// store error codes
+		vector<string> errCodes;
+		for(auto &r: responseList)
+		{
+			if(r.status.find("OK") == string::npos)
+			{
+				// unique error code?
+ 				if(find(errCodes.begin(), errCodes.end(), r.status) == errCodes.end())
+					errCodes.push_back(r.status);
+			}
+		}
+
+		// display 
+		printGreen("Profiling Results");
+		cout << endl;
+		printGreen("Requests made: "+to_string(responseList.size()));
+		if(!errCodes.empty())
+		{
+			printGreen("Error Codes");
+			for(auto &c : errCodes) cout << c << endl;
+		}
 	}
+
 
 	return 0;
 }
