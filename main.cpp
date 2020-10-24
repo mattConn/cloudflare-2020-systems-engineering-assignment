@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <string.h>
+#include <vector>
 #include "clientsocket.h"
 #include "response.h"
 
@@ -100,6 +101,7 @@ int main(int argc, char *argv[])
 	// ====================================================
 
 	int responseCount = 0;
+	vector<Response> responseList;
 	// response loop
 	while (responseCount < requestCount)
 	{
@@ -115,9 +117,12 @@ int main(int argc, char *argv[])
 		// ready to make requests
 		// ======================
 
-		// display request
-		printGreen("Request");
-		cout << socket.getRequest();
+		// display request on first iteration
+		if(responseCount ==0)
+		{
+			printGreen("Request");
+			cout << socket.getRequest();
+		}
 
 		// initial request
 		socket.makeRequest();
@@ -145,13 +150,33 @@ int main(int argc, char *argv[])
 			}
 		}
 
+		// display response body on first iteration
+		if(responseCount == 0)
+		{
+			printGreen("Response Body");
+			cout << response.body << endl;
+		}
+
 		responseCount++;
 
-		printGreen("Response " + to_string(responseCount));
-		printGreen(to_string(socket.getTotalBytesRead()) + " Bytes Read");
-		cout << response.body << endl;
+		// store total byte size
+		response.bytesRead = socket.getTotalBytesRead();
+
+		responseList.push_back(response); // store response obj
 
 	} // end requests
+
+	// display 
+	printGreen("Profiling Results");
+	cout << endl;
+	for(int i=0; i<responseList.size();i++)
+	{
+			printGreen("Response: "+to_string(i+1));
+			cout << "Status: " << responseList[i].status << endl;// status line
+			cout << "Bytes: " << responseList[i].bytesRead << endl; // byte size
+			cout << "Chunked: " << (responseList[i].headers["Transfer-Encoding"] == "chunked" ? "Yes" : "No")
+			<< endl;
+	}
 
 	return 0;
 }
