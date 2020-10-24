@@ -4,7 +4,7 @@
 #include <netdb.h> 
 #include <unistd.h> 
 #include <iostream> 
-#include <string> 
+#include <string.h> 
 
 using namespace std;
 
@@ -131,8 +131,12 @@ bool ClientSocket::makeRequest()
 // make request to url after connection
 bool ClientSocket::readResponse()
 {
-	if( read(fileDescriptor, rawResponse, 1024) == 0 )
+	bytesRead = read(fileDescriptor, rawResponse, 1024);
+
+	if(bytesRead == 0) // host closed connection
 		return false;
+
+	totalBytesRead += bytesRead;
 
 	return true;
 }
