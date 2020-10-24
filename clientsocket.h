@@ -17,7 +17,7 @@ class ClientSocket {
 	string hostDomain;
 
 	// buffer for response
-	char response[1024] = {0};
+	char rawResponse[1024] = {0};
 	string request;
 
 	// connection status
@@ -57,7 +57,8 @@ public:
 
 	bool connectToHost(); 
 	bool makeRequest(); // make request after connection 
+	bool readResponse(); // make request after connection 
 	string getRequest(){ return request; };
 	void setRequest(string uri, string domain);
-	string getResponse(){ return response; }; // get response string
+	string getRawResponse(){ return rawResponse; }; // get response string
 };
