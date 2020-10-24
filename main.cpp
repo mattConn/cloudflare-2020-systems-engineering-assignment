@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 #include <string.h>
-#include "clientsocket.h" 
-#include "response.h" 
+#include "clientsocket.h"
+#include "response.h"
 
 using namespace std;
 
@@ -12,17 +12,16 @@ void printGreen(string msg);
 int main(int argc, char *argv[])
 {
 
-
 	// for help display
 	string helpString = "Usage: makereq --url <url> [--profile <number of requests>]";
-	string url; // url buffer
+	string url;			  // url buffer
 	int requestCount = 1; // number of requests to make
 
 	// handle cli args
 	//================
 
 	// missing args
-	if(argc < 2)
+	if (argc < 2)
 	{
 		cerr << "Missing args." << endl;
 		cout << helpString << endl;
@@ -30,21 +29,21 @@ int main(int argc, char *argv[])
 	}
 
 	// check args
-	for(int i=1; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 	{
 		string arg = argv[i];
 
 		// help
-		if(arg == "--help")
+		if (arg == "--help")
 		{
 			cout << helpString << endl;
 			return 0;
 		}
 
-		// url 
-		else if(arg == "--url")
+		// url
+		else if (arg == "--url")
 		{
-			if(i+1 >= argc)
+			if (i + 1 >= argc)
 			{
 				cerr << "Missing URL." << endl;
 				return 1;
@@ -52,39 +51,43 @@ int main(int argc, char *argv[])
 			url = argv[++i];
 		}
 
-		// profile 
-		else if(arg == "--profile")
+		// profile
+		else if (arg == "--profile")
 		{
-			if(i+1 >= argc)
+			if (i + 1 >= argc)
 			{
 				cerr << "Missing request count." << endl;
 				return 1;
 			}
 
 			// test for stoi failure
-			try {
+			try
+			{
 				requestCount = stoi(argv[++i]);
-			} catch(exception &err){
+			}
+			catch (exception &err)
+			{
 				cerr << "Invalid request count " << argv[i] << ". Must be integer." << endl;
 				return 1;
 			}
 
 			// requestCount must be > 0
-			if(requestCount < 1)
+			if (requestCount < 1)
 			{
 				cerr << "Invalid request count " << requestCount << ". Must be integer > 0." << endl;
 				return 1;
 			}
 		}
 		// invalid args
-		else {
+		else
+		{
 			cerr << "Invalid argument " << arg << ". Try --help" << endl;
 			return 1;
 		}
 	}
-	
+
 	// check if url specified
-	if(url.size() == 0)
+	if (url.size() == 0)
 	{
 		cerr << "Missing URL. Specify with --url" << endl;
 		return 1;
@@ -93,72 +96,69 @@ int main(int argc, char *argv[])
 	// ===================
 	// end handle cli args
 
-
 	// make socket, parse/convert url, connect then request
 	// ====================================================
 
 	int responseCount = 0;
 	// response loop
-	while(responseCount < requestCount)
+	while (responseCount < requestCount)
 	{
 
 		ClientSocket socket(url);
-		
-		if(!socket.isConnected()) // check connection
+
+		if (!socket.isConnected()) // check connection
 		{
 			cout << "Could not connect to host " << url << endl;
 			return 1;
 		}
-		
+
 		// ready to make requests
 		// ======================
-		
+
 		// display request
 		printGreen("Request");
 		cout << socket.getRequest();
 
+		// initial request
+		socket.makeRequest();
+		socket.readResponse();
 
-			// make response obj for holding headers, body
-			Response response;
+		// read headers,status into response obj map
+		Response response(socket.getRawResponse());
 
-			// initial request
-			socket.makeRequest();
-			socket.readResponse();
+		response.body += socket.getRawResponse();
+		response.body.pop_back(); // chomp
+		response.body.pop_back(); // and again
 
-			// read headers
-			response.setHeaders(socket.getRawResponse());
-
-			response.body += socket.getRawResponse();
-			response.body.pop_back(); // chomp
-			response.body.pop_back(); // and again
-
-			// read from stream until 0 char if chunked
-			if(response.headers["Transfer-Encoding"] == "chunked")
+		// read from stream until 0 char if chunked
+		if (response.headers["Transfer-Encoding"] == "chunked")
+		{
+			while (socket.readResponse())
 			{
-				while(socket.readResponse())
-				{
-					response.body += socket.getRawResponse();
-					response.body.pop_back(); // chomp
-					response.body.pop_back(); // and again
+				response.body += socket.getRawResponse();
+				response.body.pop_back(); // chomp
+				response.body.pop_back(); // and again
 
-					// look for 0 chunk size and break
-					if(socket.getRawResponse().find("\r\n0\r\n") != string::npos) break;
-				}
+				// look for 0 chunk size and break
+				if (socket.getRawResponse().find("\r\n0\r\n") != string::npos)
+					break;
 			}
+		}
 
-			responseCount++;
+		responseCount++;
 
-			printGreen("Response "+to_string(responseCount));
-			printGreen(to_string(socket.getTotalBytesRead())+" Bytes Read");
-			cout << response.body << endl;
+		printGreen("Response " + to_string(responseCount));
+		printGreen(to_string(socket.getTotalBytesRead()) + " Bytes Read");
+		cout << response.body << endl;
 
 	} // end requests
-
 
 	return 0;
 }
 
 void printGreen(string msg)
 {
-	cout << "\033[1;32m" << "[ " << msg << " ]" << "\033[0m" << endl;
+	cout << "\033[1;32m"
+		 << "[ " << msg << " ]"
+		 << "\033[0m" << endl;
 }
