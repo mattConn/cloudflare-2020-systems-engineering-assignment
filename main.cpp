@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 		timeTotal += timeEnd - timeBegin;
 
 		// read headers,status and body into response obj
-		Response response(socket.getRawResponse());
+		Response response(socket.getResponseBuffer());
 
 		// read from stream until 0 char if chunked
 		if (response.headers["Transfer-Encoding"] == "chunked")
@@ -148,12 +148,12 @@ int main(int argc, char *argv[])
 
 				timeTotal += timeEnd - timeBegin;
 
-				response.body += socket.getRawResponse();
+				response.body += socket.getResponseBuffer();
 				response.body.pop_back(); // chomp
 				response.body.pop_back(); // and again
 
 				// look for 0 chunk size and break
-				if (socket.getRawResponse().find("\r\n0\r\n") != string::npos)
+				if (socket.getResponseBuffer().find("\r\n0\r\n") != string::npos)
 					break;
 			}
 		} else if(response.headers.find("Content-Length") != response.headers.end())
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 
 			timeTotal += timeEnd - timeBegin;
 
-			response.body += socket.getRawResponse();
+			response.body += socket.getResponseBuffer();
 			response.body.pop_back(); // chomp
 			response.body.pop_back(); // and again
 			}

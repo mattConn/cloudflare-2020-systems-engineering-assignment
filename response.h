@@ -18,5 +18,5 @@ struct Response
 	Response(){};		// default
 	Response(string r); // with response str
 
-	bool setHeadersAndBody(string rawResponse); // get data from response str
+	bool setHeadersAndBody(string responseBuffer); // get data from response str
 };

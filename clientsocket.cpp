@@ -131,7 +131,7 @@ bool ClientSocket::makeRequest()
 // make request to url after connection
 bool ClientSocket::readResponse()
 {
-	bytesRead = read(fileDescriptor, rawResponse, 1024);
+	bytesRead = read(fileDescriptor, responseBuffer, 1024);
 
 	if(bytesRead == 0) // host closed connection
 		return false;

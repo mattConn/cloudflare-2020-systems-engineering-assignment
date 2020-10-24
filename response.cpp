@@ -6,17 +6,17 @@
 using namespace std;
 
 // transform response string
-Response::Response(string rawResponse)
+Response::Response(string responseBuffer)
 {
-	setHeadersAndBody(rawResponse);
+	setHeadersAndBody(responseBuffer);
 }
 
-bool Response::setHeadersAndBody(string rawResponse)
+bool Response::setHeadersAndBody(string responseBuffer)
 {
 	// get data from response
-	int splitPos = rawResponse.find("\r\n\r\n");
-	istringstream ssHeaders(rawResponse.substr(0, splitPos));
-	body = rawResponse.substr(splitPos+4);
+	int splitPos = responseBuffer.find("\r\n\r\n");
+	istringstream ssHeaders(responseBuffer.substr(0, splitPos));
+	body = responseBuffer.substr(splitPos+4);
 	string line;
 
 	// status line

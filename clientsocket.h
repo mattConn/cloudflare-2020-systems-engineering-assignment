@@ -8,16 +8,15 @@ class ClientSocket {
  	// socket file descriptor
 	int fileDescriptor = 0;
 
-	int hostPort;
-
 	// host identifiers
+	int hostPort;
 	char *hostIP;
 	string hostURL;
 	string hostURI;
 	string hostDomain;
 
 	// buffer for response
-	char rawResponse[1024] = {0};
+	char responseBuffer[1024] = {0};
 	int bytesRead = 0;
 	int totalBytesRead = 0;
 	string request;
@@ -63,11 +62,11 @@ public:
 
 	bool readResponse(); // make request after connection 
 
+	// request string accessors
 	string getRequest(){ return request; };
-
 	void setRequest(string uri, string domain);
 
-	string getRawResponse(){ return rawResponse; }; // get response string
+	string getResponseBuffer(){ return responseBuffer; }; // get raw response 
 
 	int getBytesRead(){ return bytesRead; };
 	int getTotalBytesRead(){ return totalBytesRead; };
