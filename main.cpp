@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
 	// timing
 	time_t timeBegin;
 	time_t timeEnd;
+	time_t timeSum = 0; // for mean time
 	time_t timeTotal = 0;
 
 	// response loop
@@ -186,6 +187,7 @@ int main(int argc, char *argv[])
 		response.bytesRead = socket.getTotalBytesRead();
 		// store response time
 		response.time = timeTotal;
+		timeSum += timeTotal; // for mean
 
 		responseList.push_back(response); // store response obj
 
@@ -248,6 +250,7 @@ int main(int argc, char *argv[])
 		printGreen("Requests made: "+to_string(responseList.size()));
 		printGreen("Fastest Time: "+to_string(fastestTime)+"s");
 		printGreen("Slowest Time: "+to_string(slowestTime)+"s");
+		printGreen("Mean Time: "+to_string(timeSum/responseList.size())+"s");
 		printGreen("Success Rate: "+to_string((int) (successRate*100.0))+"%");
 
 		printGreen("Error Codes");
