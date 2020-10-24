@@ -22,6 +22,8 @@ bool Response::setHeaders(string rawResponse)
 	{
 		line.pop_back(); // carriage return
 		status = line;
+		if(status.find("OK") == string::npos) // get error
+			success = false;
 	}
 
 	// headers

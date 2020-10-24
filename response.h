@@ -7,6 +7,7 @@ using namespace std;
 struct Response
 {
 	string status;				 // status line
+	bool success = true;		  // depends on status
 	map<string, string> headers; // header lines
 	string body;				 // body of request
 	int bytesRead;				// bytes read from response

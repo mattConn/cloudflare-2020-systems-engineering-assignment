@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 		vector<string> errCodes;
 		for(auto &r: responseList)
 		{
-			if(r.status.find("OK") == string::npos)
+			if(!r.success) // failed
 			{
 				// unique error code?
  				if(find(errCodes.begin(), errCodes.end(), r.status) == errCodes.end())
@@ -188,12 +188,13 @@ int main(int argc, char *argv[])
 		printGreen("Profiling Results");
 		cout << endl;
 		printGreen("Requests made: "+to_string(responseList.size()));
+		printGreen("Error Codes");
 		if(!errCodes.empty())
 		{
-			printGreen("Error Codes");
 			for(auto &c : errCodes) cout << c << endl;
 			cout << endl;
 		}
+		cout << "No Error Codes" << endl;
 	}
 
 
