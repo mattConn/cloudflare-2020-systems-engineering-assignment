@@ -127,7 +127,7 @@ bool ClientSocket::connectToHost()
 }
 
 // make request to host after connection
-bool ClientSocket::readRequest()
+bool ClientSocket::sendRequest()
 {
 	if(send(fileDescriptor, (char *)request.c_str(), strlen(request.c_str()), 0) < 0)
 		return false;

@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	{
 		ClientSocket socket(url); // make socket fd, convert url and connect
 
-		if (socket.readRequest()) // successful send
+		if (socket.sendRequest()) // successful send
 		{
 			requestCount++;
 
