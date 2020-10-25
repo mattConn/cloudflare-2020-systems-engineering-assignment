@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 		ClientSocket socket(url);
 		socket.makeRequest();
 		socket.readResponse();
-		cout << socket.response.body << endl;
+		cout << socket.response.body;
 		
 		numRequests--;
 	}

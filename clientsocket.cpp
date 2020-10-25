@@ -149,14 +149,22 @@ bool ClientSocket::readResponse()
 
 	response.body += response.buffer; // append body
 
-
-	// if (response.headers["Transfer-Encoding"] == "chunked")
-	// {
-	// 	cout << "CHUNKED" << endl;
-	// }
-
 	response.time += (timeEnd - timeBegin); // add to response time
 	response.bytesRead += currentBytesRead; // add to byte count
+
+	// if chunked
+	if (response.headers["Transfer-Encoding"] == "chunked")
+	{
+		// read until zero chunk size
+		if(response.body.find("\r\n0\r\n") == string::npos)
+		{
+			readResponse();
+		}else{
+			// trim from zero
+			response.body = response.body.substr(0,response.body.find("\r\n0\r\n"));
+			response.body += "\r\n";
+		}
+	}
 
 	return true;
 }
