@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 
 	// profiling variables
 	// ===================
-	vector<time_t> responseTimes;
+	vector<float> responseTimes;
 	while(requestCount < requestQuota)
 	{
 		ClientSocket socket(url);
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 
 	// sort times
 	sort(responseTimes.begin(), responseTimes.end());
-	time_t sumTimes = 0;
+	float sumTimes = 0;
 	for(auto &t : responseTimes) sumTimes += t;
 
 	// profiling data

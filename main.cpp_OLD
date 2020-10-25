@@ -107,13 +107,13 @@ int main(int argc, char *argv[])
 	vector<int> responseTimes; // all response times
 
 	// timing
-	time_t timeBegin;
-	time_t timeEnd;
-	time_t timeSum = 0; // for mean time
+	clock_t timeBegin;
+	clock_t timeEnd;
+	clock_t timeSum = 0; // for mean time
 	// response loop
 	while (responseCount < requestCount)
 	{
-		time_t timeTotal = 0;
+		clock_t timeTotal = 0;
 
 		ClientSocket socket(url);
 
@@ -129,9 +129,9 @@ int main(int argc, char *argv[])
 		// initial request
 		// ===============
 		socket.makeRequest();
-		timeBegin = time(NULL);
+		timeBegin = clock();
 		socket.readResponse();
-		timeEnd = time(NULL);
+		timeEnd = clock();
 		timeTotal += timeEnd - timeBegin;
 
 		// read from stream until 0 char if chunked
@@ -175,8 +175,8 @@ int main(int argc, char *argv[])
 	if(requestCount > 1)
 	{
 		// extrema of response times 
-		time_t fastestTime = 0;
-		time_t slowestTime = 0;
+		clock_t fastestTime = 0;
+		clock_t slowestTime = 0;
 
 		// extrema of read sizes 
 		int largestRead = 0;

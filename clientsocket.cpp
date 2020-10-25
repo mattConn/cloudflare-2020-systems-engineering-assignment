@@ -137,9 +137,9 @@ bool ClientSocket::makeRequest()
 // make request to url after connection
 bool ClientSocket::readResponse()
 {
-	time_t timeBegin = time(NULL); // time read
+	clock_t timeBegin = clock(); // time read
 	int currentBytesRead = read(fileDescriptor, response.buffer, response.bufferSize);
-	time_t timeEnd = time(NULL);
+	clock_t timeEnd = clock();
 
 	if (currentBytesRead == 0) // host closed connection
 		return false;
@@ -149,7 +149,7 @@ bool ClientSocket::readResponse()
 
 	response.body += response.buffer; // append body
 
-	response.time += (timeEnd - timeBegin); // add to response time
+	response.time += ((float)(timeEnd - timeBegin))/CLOCKS_PER_SEC; // add to response time
 	response.bytesRead += currentBytesRead; // add to byte count
 
 	// if chunked

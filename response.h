@@ -17,7 +17,7 @@ struct Response
 	map<string, string> headers; // header lines
 	string body;				 // body of response
 	int bytesRead = 0;				// bytes read from response
-	time_t time = 0;					// response time
+	float time = 0;					// response time
 
 	// constructors
 	Response(){};
