@@ -116,7 +116,6 @@ bool ClientSocket::setHostPort(int port)
 	return true;
 }
 
-// connect to url
 bool ClientSocket::connectToHost()
 {
 	// connect to address and store sock fd
@@ -127,14 +126,15 @@ bool ClientSocket::connectToHost()
 	return true;
 }
 
-// make request to url after connection
-bool ClientSocket::makeRequest()
+// make request to host after connection
+bool ClientSocket::readRequest()
 {
-	send(fileDescriptor, (char *)request.c_str(), strlen(request.c_str()), 0);
-	return true;
+	if(send(fileDescriptor, (char *)request.c_str(), strlen(request.c_str()), 0) < 0)
+		return false;
+	else
+		return true;
 }
 
-// make request to url after connection
 bool ClientSocket::readResponse()
 {
 	clock_t timeBegin = clock(); // time read
@@ -158,8 +158,11 @@ bool ClientSocket::readResponse()
 		// read until zero chunk size
 		if(response.body.find("\r\n0\r\n") == string::npos)
 		{
+			response.numChunks++;
 			readResponse();
 		}else{
+			response.numChunks++; // count last or only chunk
+
 			// trim from zero
 			response.body = response.body.substr(0,response.body.find("\r\n0\r\n"));
 			response.body += "\r\n";
@@ -186,14 +189,17 @@ bool ClientSocket::setHeaders()
 	if (getline(ssHeaders, line))
 	{
 		line.pop_back(); // carriage return
-		response.status = line;
+		response.statusLine = line.substr(line.find(" ")+1);
 
-		// get status
-		int pos = response.status.find(" ");
-		response.statusCode = stoi(response.status.substr(pos+1, response.status.find(" ",pos+1)));
+		// get status code 
+		response.statusCode = stoi(response.statusLine.substr(0,3));
+
+		// set flag
+		if (response.statusCode >= 200 && response.statusCode < 300)
+			response.wasSuccessful = true;
 	}
 
-	// headers
+	// headers into map
 	while (getline(ssHeaders, line) && line != "\r")
 	{
 		line.pop_back(); // remove carriage return

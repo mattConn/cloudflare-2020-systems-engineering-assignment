@@ -8,51 +8,57 @@ using namespace std;
 
 void printMsg(string msg);
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	// for help display
 	string helpString = "Usage: makereq --url <url> [--profile <number of requests>]";
 
+	int responseCount = 0;
 	int requestCount = 0;
-	int requestQuota = 1;
+	int requestAttempts = 0;
+
+	// set via args
+	int requestQuota = 1; // how many requests we want to make
 	string url;
 
 	// handle args
-	if(argc < 2)
+	// ===========
+	if (argc < 2)
 	{
 		cout << helpString << endl;
 		return 1;
 	}
 
-	for(int i=1; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 	{
 		char flag = argv[i][2];
 
-		switch(flag)
+		switch (flag)
 		{
-			case 'h': // help
-				cout << helpString << endl;
-				return 0;
+		case 'h': // help
+			cout << helpString << endl;
+			return 0;
 
-			case 'u': // url
-				url = argv[++i];
+		case 'u': // url
+			url = argv[++i];
 			break;
 
-			case 'p':
-				requestQuota = stoi(argv[++i]);
+		case 'p': // profiling
+			requestQuota = stoi(argv[++i]);
 			break;
 
-			default:
-				cout << helpString << endl;
-				return 1;
+		default:
+			cout << helpString << endl;
+			return 1;
 		}
 	}
 
-	if(url.empty())
+	if (url.empty())
 	{
 		cout << helpString << endl;
 		return 1;
 	}
+
 	// ===============
 	// end handle args
 
@@ -66,62 +72,78 @@ int main(int argc, char* argv[])
 	// repsonse sizes in bytes
 	vector<int> responseSizes;
 
-	string errorCodes;
+	vector<string> errorStatuses;
 
 	// make requests
-	while(requestCount < requestQuota)
+	// =============
+
+	while (requestAttempts < requestQuota)
 	{
-		ClientSocket socket(url);
-		socket.makeRequest();
-		socket.readResponse();
+		ClientSocket socket(url); // make socket fd, convert url and connect
 
-		cout << endl;
-		printMsg("Body of response "+to_string(requestCount)+"/"+to_string(requestQuota)+":");
-		cout << endl;
+		if (socket.readRequest()) // successful send
+		{
+			requestCount++;
 
-		cout << socket.response.body << endl;
+			if (socket.readResponse()) // successful read
+			{
+				responseCount++;
 
-		// record time
-		responseTimes.push_back(socket.response.time);
-		responseSizes.push_back(socket.response.size);
+				// display body
+				cout << endl;
+				printMsg("Body of response " + to_string(responseCount) + "/" + to_string(requestQuota) + ":");
+				cout << endl;
 
-		// count successes, store errors
-		if(socket.response.statusCode >= 200)
-			successCount++;
-		else
-			errorCodes += (socket.response.status+"\n");
-		
-		requestCount++;
+				cout << socket.response.body << endl;
+
+				// record time
+				responseTimes.push_back(socket.response.time);
+				responseSizes.push_back(socket.response.size);
+
+				// count successes, store unique errors
+				if(socket.response.wasSuccessful)
+					successCount++;
+				else
+				{
+					if(find(errorStatuses.begin(), errorStatuses.end(), socket.response.statusLine) == errorStatuses.end() )
+						errorStatuses.push_back(socket.response.statusLine);
+				}
+			} // end response read
+		} // end request send
+
+		requestAttempts++;
 	}
 	// end making requests
 
 	// sort times, sum
 	sort(responseTimes.begin(), responseTimes.end());
 	float sumTimes = 0;
-	for(auto &t : responseTimes) sumTimes += t;
+	for (auto &t : responseTimes)
+		sumTimes += t;
 
 	// sort sizes
 	sort(responseSizes.begin(), responseSizes.end());
 
-	// profiling data
+	// calc success rate
+	int successRate = (((float)successCount) / ((float)responseCount)) * 100;
+
+	// display profiling data
 	cout << endl;
-	printMsg("Requests made: "+to_string(requestCount));
-	printMsg("Fastest response time: "+to_string(responseTimes.front())+"s");
-	printMsg("Slowest response time: "+to_string(responseTimes.back())+"s");
-	printMsg("Mean response time: "+to_string(sumTimes/responseTimes.size())+"s");
-	printMsg("Median response time: "+to_string(responseTimes[responseTimes.size()/2])+"s");
+	printMsg("Requests made: " + to_string(requestCount));
+	printMsg("Fastest response time: " + to_string(responseTimes.front()) + "s");
+	printMsg("Slowest response time: " + to_string(responseTimes.back()) + "s");
+	printMsg("Mean response time: " + to_string(sumTimes / responseTimes.size()) + "s");
+	printMsg("Median response time: " + to_string(responseTimes[responseTimes.size() / 2]) + "s");
+	printMsg("Success rate: " + to_string(successRate) + "%");
 	printMsg("Error codes:");
-	cout << errorCodes << endl;
-	printMsg("Smallest response: "+to_string(responseSizes.front())+" bytes");
-	printMsg("Largest response: "+to_string(responseSizes.back())+" bytes");
-
-
-	
+	for(auto &err : errorStatuses) cout << err << endl;
+	printMsg("Smallest response: " + to_string(responseSizes.front()) + " bytes");
+	printMsg("Largest response: " + to_string(responseSizes.back()) + " bytes");
 
 	return 0;
 }
 
 void printMsg(string msg)
 {
-	cout << "[ "+msg+" ]" << endl;
+	cout << "[ " + msg + " ]" << endl;
 }

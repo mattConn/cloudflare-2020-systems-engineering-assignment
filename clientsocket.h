@@ -60,7 +60,7 @@ public:
 
 	bool connectToHost(); 
 
-	bool makeRequest(); // make request after connection 
+	bool readRequest(); // make request after connection 
 
 	bool readResponse(); // make request after connection 
 
