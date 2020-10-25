@@ -73,5 +73,6 @@ public:
 	// request string accessors
 	string getRequest(){ return request; };
 	void setRequest(string uri, string domain);
+	bool setHeaders();
 
 };

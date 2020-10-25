@@ -10,7 +10,7 @@ check:
 	./$(BIN) --url $(URL) 
 
 profile:
-	./$(BIN) --url $(URL) --profile 4
+	./$(BIN) --url $(URL)/links --profile 4
 
 links:
 	./$(BIN) --url $(URL)/links 

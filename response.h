@@ -21,7 +21,7 @@ struct Response
 
 	// constructors
 	Response(){};		// default
-	Response(string r); // with response str
+	Response(char *r); // with response str
 
-	bool setHeadersAndBody(string responseBuffer); // get data from response str
+	bool setHeadersAndBody(char responseBuffer[]); // get data from response str
 };

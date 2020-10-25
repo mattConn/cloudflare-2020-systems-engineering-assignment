@@ -1,23 +1,31 @@
 #include "response.h"
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 
 using namespace std;
 
 // transform response string
-Response::Response(string responseBuffer)
+Response::Response(char *responseBuffer)
 {
 	setHeadersAndBody(responseBuffer);
 }
 
-bool Response::setHeadersAndBody(string responseBuffer)
+bool Response::setHeadersAndBody(char responseBuffer[])
 {
 	// get data from response
-	int splitPos = responseBuffer.find("\r\n\r\n");
-	istringstream ssHeaders(responseBuffer.substr(0, splitPos));
-	body = responseBuffer.substr(splitPos+4);
-	string line;
+	int splitPos = string(responseBuffer).find("\r\n\r\n");
+	istringstream ssHeaders(string(responseBuffer).substr(0, splitPos)); // headers string
+	strcpy(responseBuffer, string(responseBuffer).substr(splitPos+4).c_str()); // body string, mutate buffer
+
+	body = responseBuffer; // store body
+
+	// remove newline and carriage return
+	body.pop_back();
+	body.pop_back();
+
+	string line; // for getline
 
 	// status line
 	if (getline(ssHeaders, line))
