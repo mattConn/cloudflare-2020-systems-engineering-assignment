@@ -18,12 +18,6 @@ class ClientSocket {
 	string hostURI;
 	string hostDomain;
 
-
-	// buffer for response
-	// char responseBuffer[1024] = {0};
-	// int bytesRead = 0;
-	// int totalBytesRead = 0;
-
 	string request;
 
 	// connection status

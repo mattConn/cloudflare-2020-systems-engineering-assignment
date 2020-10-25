@@ -13,10 +13,10 @@ struct Response
 	const static int bufferSize = 1024;
 	char buffer[bufferSize] = {0}; // buffer read() writes to
 	string status;				 // status line
-	bool success = true;		  // depends on status
+	int statusCode;				 
 	map<string, string> headers; // header lines
 	string body;				 // body of response
-	int bytesRead = 0;				// bytes read from response
+	int size = 0;				// bytes read from response
 	float time = 0;					// response time
 
 	// constructors

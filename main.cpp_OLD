@@ -198,11 +198,11 @@ int main(int argc, char *argv[])
 
 			// get read sizes
 			if(largestRead == 0 && smallestRead == 0)
-				largestRead = smallestRead = r.bytesRead;	
-			else if(r.bytesRead > largestRead) // largest
-				largestRead = r.bytesRead;	
-			else if(r.bytesRead < smallestRead) // smallest
-				smallestRead = r.bytesRead;	
+				largestRead = smallestRead = r.size;	
+			else if(r.size > largestRead) // largest
+				largestRead = r.size;	
+			else if(r.size < smallestRead) // smallest
+				smallestRead = r.size;	
 
 			// get error codes and count successes
 			if(!r.success) // failed

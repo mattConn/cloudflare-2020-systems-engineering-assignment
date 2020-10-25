@@ -58,24 +58,50 @@ int main(int argc, char* argv[])
 
 	// profiling variables
 	// ===================
+
+	// response times
 	vector<float> responseTimes;
+	int successCount = 0; // count successful responses
+
+	// repsonse sizes in bytes
+	vector<int> responseSizes;
+
+	string errorCodes;
+
+	// make requests
 	while(requestCount < requestQuota)
 	{
 		ClientSocket socket(url);
 		socket.makeRequest();
 		socket.readResponse();
+
+		cout << endl;
+		printMsg("Body of response "+to_string(requestCount)+"/"+to_string(requestQuota)+":");
+		cout << endl;
+
 		cout << socket.response.body << endl;
 
 		// record time
 		responseTimes.push_back(socket.response.time);
+		responseSizes.push_back(socket.response.size);
+
+		// count successes, store errors
+		if(socket.response.statusCode >= 200)
+			successCount++;
+		else
+			errorCodes += (socket.response.status+"\n");
 		
 		requestCount++;
 	}
+	// end making requests
 
-	// sort times
+	// sort times, sum
 	sort(responseTimes.begin(), responseTimes.end());
 	float sumTimes = 0;
 	for(auto &t : responseTimes) sumTimes += t;
+
+	// sort sizes
+	sort(responseSizes.begin(), responseSizes.end());
 
 	// profiling data
 	cout << endl;
@@ -84,6 +110,10 @@ int main(int argc, char* argv[])
 	printMsg("Slowest response time: "+to_string(responseTimes.back())+"s");
 	printMsg("Mean response time: "+to_string(sumTimes/responseTimes.size())+"s");
 	printMsg("Median response time: "+to_string(responseTimes[responseTimes.size()/2])+"s");
+	printMsg("Error codes:");
+	cout << errorCodes << endl;
+	printMsg("Smallest response: "+to_string(responseSizes.front())+" bytes");
+	printMsg("Largest response: "+to_string(responseSizes.back())+" bytes");
 
 
 	

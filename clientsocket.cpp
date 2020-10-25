@@ -150,7 +150,7 @@ bool ClientSocket::readResponse()
 	response.body += response.buffer; // append body
 
 	response.time += ((float)(timeEnd - timeBegin))/CLOCKS_PER_SEC; // add to response time
-	response.bytesRead += currentBytesRead; // add to byte count
+	response.size += currentBytesRead; // add to byte count
 
 	// if chunked
 	if (response.headers["Transfer-Encoding"] == "chunked")
@@ -187,8 +187,10 @@ bool ClientSocket::setHeaders()
 	{
 		line.pop_back(); // carriage return
 		response.status = line;
-		if (response.status.find("OK") == string::npos) // get error
-			response.success = false;
+
+		// get status
+		int pos = response.status.find(" ");
+		response.statusCode = stoi(response.status.substr(pos+1, response.status.find(" ",pos+1)));
 	}
 
 	// headers
