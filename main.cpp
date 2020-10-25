@@ -134,50 +134,28 @@ int main(int argc, char *argv[])
 		timeEnd = time(NULL);
 		timeTotal += timeEnd - timeBegin;
 
-		// read headers,status and body into response obj
-		Response response(socket.getResponseBuffer());
-
 		// read from stream until 0 char if chunked
-		if (response.headers["Transfer-Encoding"] == "chunked")
+		if (socket.response.headers["Transfer-Encoding"] == "chunked")
 		{
 			while(true)
 			{
-				timeBegin = time(NULL);
 				if(!socket.readResponse()) break;
-				timeEnd = time(NULL);
-
-				timeTotal += timeEnd - timeBegin;
-
-				response.body += socket.getResponseBuffer();
-				response.body.pop_back(); // chomp
-				response.body.pop_back(); // and again
 
 				// look for 0 chunk size and break
-				if (socket.getResponseBuffer().find("\r\n0\r\n") != string::npos)
+				if (string(socket.response.buffer).find("\r\n0\r\n") != string::npos)
 					break;
 			}
-		} else if(response.headers.find("Content-Length") != response.headers.end())
+		} else if(socket.response.headers.find("Content-Length") != socket.response.headers.end())
 		{
 			// get rest of response body if missing
-			while(response.body.size() < stoi(response.headers["Content-Length"]))
-			{
-
-			timeBegin = time(NULL);
-			if(!socket.readResponse()) break;
-			timeEnd = time(NULL);
-
-			timeTotal += timeEnd - timeBegin;
-
-			response.body += socket.getResponseBuffer();
-			response.body.pop_back(); // chomp
-			response.body.pop_back(); // and again
-			}
+			while(socket.response.body.size() < stoi(socket.response.headers["Content-Length"]))
+				if(!socket.readResponse()) break;
 		}
 
 		// display response body on first iteration
 		if(responseCount == 0)
 		{
-			cout  << response.body << endl;
+			cout  << socket.response.body << endl;
 
 			if(requestCount > 1) // if profiling
 				printMsg("Making "+to_string(requestCount-1)+" More Requests...");
@@ -185,14 +163,10 @@ int main(int argc, char *argv[])
 
 		responseCount++;
 
-		// store total byte size
-		response.bytesRead = socket.getTotalBytesRead();
-		// store response time
-		response.time = timeTotal;
-		responseTimes.push_back(timeTotal);
-		timeSum += timeTotal; // for mean
+		timeSum += socket.response.time; // for mean
 
-		responseList.push_back(response); // store response obj
+		responseList.push_back(socket.response); // store response obj
+		responseTimes.push_back(socket.response.time); // store response time 
 
 	} // end requests
 

@@ -131,12 +131,22 @@ bool ClientSocket::makeRequest()
 // make request to url after connection
 bool ClientSocket::readResponse()
 {
-	bytesRead = read(fileDescriptor, responseBuffer, 1024);
+	time_t timeBegin = time(NULL); // time read
+	int currentBytesRead = read(fileDescriptor, response.buffer, response.bufferSize);
+	time_t timeEnd = time(NULL);
 
-	if(bytesRead == 0) // host closed connection
+	if(currentBytesRead == 0) // host closed connection
 		return false;
 
-	totalBytesRead += bytesRead;
+	if(response.bytesRead == 0) // first response
+		response.setHeadersAndBody(response.buffer);
+
+	response.time += (timeEnd - timeBegin); // add to response time
+	response.bytesRead += currentBytesRead; // add to byte count
+
+	response.body += response.buffer; // append body
+	response.body.pop_back(); // remove newline
+	response.body.pop_back(); // remove carriage return
 
 	return true;
 }
