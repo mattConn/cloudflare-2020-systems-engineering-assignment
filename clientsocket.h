@@ -1,6 +1,9 @@
 #include <iostream>
 #include <netdb.h>
 #include <string>
+#include "response.h"
+
+struct response;
 
 using namespace std;
 
@@ -15,10 +18,12 @@ class ClientSocket {
 	string hostURI;
 	string hostDomain;
 
+
 	// buffer for response
-	char responseBuffer[1024] = {0};
-	int bytesRead = 0;
-	int totalBytesRead = 0;
+	// char responseBuffer[1024] = {0};
+	// int bytesRead = 0;
+	// int totalBytesRead = 0;
+
 	string request;
 
 	// connection status
@@ -37,6 +42,9 @@ public:
 
 	ClientSocket(); // default constructor
 	ClientSocket(string &url); // constructor with url 
+
+	// for storing response data
+	Response response;
 
 	// methods
 	//========
@@ -65,10 +73,6 @@ public:
 	// request string accessors
 	string getRequest(){ return request; };
 	void setRequest(string uri, string domain);
-
-	string getResponseBuffer(){ return responseBuffer; }; // get raw response 
-
-	int getBytesRead(){ return bytesRead; };
-	int getTotalBytesRead(){ return totalBytesRead; };
+	bool setHeaders();
 
 };
