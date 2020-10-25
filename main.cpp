@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
 
 	// display profiling data
 	cout << endl;
+	printMsg(url);
 	printMsg("Requests made: " + to_string(requestCount));
 	printMsg("Fastest response time: " + to_string(responseTimes.front()) + "s");
 	printMsg("Slowest response time: " + to_string(responseTimes.back()) + "s");
