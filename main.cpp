@@ -93,12 +93,15 @@ int main(int argc, char *argv[])
 			{
 				responseCount++;
 
-				// display body
-				cout << endl;
-				printMsg("Body of response " + to_string(responseCount) + "/" + to_string(requestQuota) + ":");
-				cout << endl;
+				// display body on first response
+				if(responseCount == 1)
+				{
+					cout << endl;
+					printMsg("Body of response " + to_string(responseCount) + "/" + to_string(requestQuota) + ":");
+					cout << endl;
 
-				cout << socket.response.body << endl;
+					cout << socket.response.body << endl;
+				}
 
 				// record time
 				responseTimes.push_back(socket.response.time);
@@ -128,13 +131,14 @@ int main(int argc, char *argv[])
 	// sort sizes
 	sort(responseSizes.begin(), responseSizes.end());
 
-	// calc success rate
-	int successRate = (((float)successCount) / ((float)responseCount)) * 100;
+	// calc success rate (successful responses received)/(requests made)
+	int successRate = (((float)successCount) / ((float)requestCount)) * 100;
 
 	// display profiling data
 	cout << endl;
 	printMsg(url);
 	printMsg("Requests made: " + to_string(requestCount));
+	printMsg("Responses received: " + to_string(responseCount));
 	printMsg("Fastest response time: " + to_string(responseTimes.front()) + "s");
 	printMsg("Slowest response time: " + to_string(responseTimes.back()) + "s");
 	printMsg("Mean response time: " + to_string(sumTimes / responseTimes.size()) + "s");
