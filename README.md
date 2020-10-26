@@ -30,10 +30,10 @@ Run `make` to compile.
 ## Example Screenshots
 
 *makereq sending 500 requests to `cloudflare2020-assignment.foobiebletch.net/links`*
-![](requests_foobiebletch.net_links.png)
+![](readme_assets/requests_foobiebletch.net_links.png)
 
 *makereq sending 500 requests to `cplusplus.com`*
-![](requests_cplusplus.com.png)
+![](readme_assets/requests_cplusplus.com.png)
 
 ## Testing Results
 Below are blocks of output from making 500 requests to several websites that allow HTTP requests (including the one I made for the General Engineering Assignment).
