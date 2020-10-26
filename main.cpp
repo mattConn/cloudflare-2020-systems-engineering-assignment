@@ -77,13 +77,17 @@ int main(int argc, char *argv[])
 	// make requests
 	// =============
 
+	ClientSocket socket(url); // make socket fd, convert url and connect
+
 	while (requestAttempts < requestQuota)
 	{
-		ClientSocket socket(url); // make socket fd, convert url and connect
 
 		if (socket.sendRequest()) // successful send
 		{
 			requestCount++;
+
+			// reset response
+			socket.response = Response();
 
 			if (socket.readResponse()) // successful read
 			{

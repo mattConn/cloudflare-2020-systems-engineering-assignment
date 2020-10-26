@@ -144,7 +144,7 @@ bool ClientSocket::readResponse()
 	if (currentBytesRead == 0) // host closed connection
 		return false;
 
-	// check if headers were stored
+	// check if headers already set
 	if(response.headers.empty()) setHeaders();
 
 	response.body += response.buffer; // append body
@@ -180,6 +180,9 @@ void ClientSocket::setRequest(string uri, string domain)
 bool ClientSocket::setHeaders()
 {
 	int splitPos = string(response.buffer).find("\r\n\r\n");
+
+	if(splitPos == string::npos) return false; // no headers
+
 	istringstream ssHeaders(string(response.buffer).substr(0, splitPos));		   // headers string
 	strcpy(response.buffer, string(response.buffer).substr(splitPos + 4).c_str()); // body string, mutate buffer
 
