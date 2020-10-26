@@ -26,10 +26,39 @@ Run `make` to compile.
 
 `makereq --help` will display a simple help message.
 
-## Testing Results
+## Example Screenshots
 
 *makereq sending 20 requests to `cloudflare2020-assignment.foobiebletch.net/links`*
 ![](response_cloudflare2020-assignment.foobiebletch.net_links.png)
 
 *makereq sending 20 requests to `www.gnu.org`*
-![](response_cloudflare2020-assignment.foobiebletch.net_links.png)
+![](response_gnu.org.png)
+
+## Testing Results
+50 requests to my links:
+```
+[ cloudflare2020-assignment.foobiebletch.net/links ]
+[ Requests made: 50 ]
+[ Fastest response time: 0.000018s ]
+[ Slowest response time: 0.000054s ]
+[ Mean response time: 0.000034s ]
+[ Median response time: 0.000035s ]
+[ Success rate: 100% ]
+[ Error codes: ]
+[ Smallest response: 582 bytes ]
+[ Largest response: 995 bytes ]
+```
+
+100 requests to my links:
+```
+[ cloudflare2020-assignment.foobiebletch.net/links ]
+[ Requests made: 100 ]
+[ Fastest response time: 0.000021s ]
+[ Slowest response time: 0.000092s ]
+[ Mean response time: 0.000038s ]
+[ Median response time: 0.000038s ]
+[ Success rate: 100% ]
+[ Error codes: ]
+[ Smallest response: 864 bytes ]
+[ Largest response: 1005 bytes ]
+```
