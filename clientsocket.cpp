@@ -191,6 +191,8 @@ bool ClientSocket::setHeaders()
 	// status line
 	if (getline(ssHeaders, line))
 	{
+		// no top status line? not actually headers
+		if(line.find("HTTP/1.1") == string::npos) return false;
 		line.pop_back(); // carriage return
 		response.statusLine = line.substr(line.find(" ")+1);
 
