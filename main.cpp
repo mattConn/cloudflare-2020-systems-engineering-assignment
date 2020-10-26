@@ -93,12 +93,15 @@ int main(int argc, char *argv[])
 			{
 				responseCount++;
 
-				// display body
-				cout << endl;
-				printMsg("Body of response " + to_string(responseCount) + "/" + to_string(requestQuota) + ":");
-				cout << endl;
+				// display body on first, middle and last response
+				if(responseCount == 1 || responseCount == requestQuota/2 || responseCount == requestQuota)
+				{
+					cout << endl;
+					printMsg("Body of response " + to_string(responseCount) + "/" + to_string(requestQuota) + ":");
+					cout << endl;
 
-				cout << socket.response.body << endl;
+					cout << socket.response.body << endl;
+				}
 
 				// record time
 				responseTimes.push_back(socket.response.time);
