@@ -123,12 +123,12 @@ All responses were received for each request except for cuny.edu, therefore I wi
 Fastest response times for each set of responses, from fastest to slowest:
 - duckduckgo.com : 1E-6s
 - google.com : 2E-6s
-- cloudflare2020-assignment.foobiebletch.net/links: 5E-6
+- cloudflare2020-assignment.foobiebletch.net/links: 5E-6s
 
 Mean response times from fastest to slowest:
 - duckduckgo.com : 10E-6s
 - google.com : 12E-6s
-- cloudflare2020-assignment.foobiebletch.net/links: 29E-6
+- cloudflare2020-assignment.foobiebletch.net/links: 29E-6s
 
 
 ## Issues
